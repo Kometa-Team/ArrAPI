@@ -1,6 +1,10 @@
 ArrAPI
 ==========================================================
 
+.. image:: https://img.shields.io/readthedocs/arrapi
+    :target: https://arrapi.readthedocs.io/en/latest/?badge=latest
+    :alt: Read the Docs
+
 .. image:: https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif
     :target: https://www.paypal.com/donate?business=JTK3CVKF3ZHP2&item_name=ArrAPI&currency_code=USD
 
@@ -40,7 +44,7 @@ The ``apikey`` can be found by going to ``Settings > General > Security > API Ke
     sonarr = SonarrAPI(baseurl, apikey)
 
 .. |SonarrAPI| replace:: ``SonarrAPI``
-.. _SonarrAPI: https://testarr.readthedocs.io/en/latest/sonarr.html#module-arrapi.sonarr
+.. _SonarrAPI: https://arrapi.readthedocs.io/en/latest/sonarr.html#module-arrapi.sonarr
 
 Using the SonarrAPI Instance
 ----------------------------------------------------------
@@ -50,7 +54,7 @@ Once you have a |SonarrAPI|_ instance you can use it to interact with the applic
 To add, edit, or delete a singular Series you must first find the |Series|_ object.
 
 .. |Series| replace:: ``Series``
-.. _Series: https://testarr.readthedocs.io/en/latest/objs.html#series
+.. _Series: https://arrapi.readthedocs.io/en/latest/objs.html#series
 
 Find a Series Object
 ----------------------------------------------------------
@@ -60,7 +64,7 @@ There are three ways to find a |Series|_ object.
 You can get a |Series|_ object using |get_series|_ and giving it a ``Sonarr Series ID`` or ``TVDb ID``.
 
 .. |get_series| replace:: ``get_series``
-.. _get_series: https://testarr.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.get_series
+.. _get_series: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.get_series
 
 .. code-block:: python
 
@@ -69,7 +73,7 @@ You can get a |Series|_ object using |get_series|_ and giving it a ``Sonarr Seri
 You can get a ``List`` of |Series|_ objects using |search_series|_ and giving it a search term.
 
 .. |search_series| replace:: ``search_series``
-.. _search_series: https://testarr.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.search_series
+.. _search_series: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.search_series
 
 .. code-block:: python
 
@@ -78,7 +82,7 @@ You can get a ``List`` of |Series|_ objects using |search_series|_ and giving it
 You can get a ``List`` of all |Series|_ objects in Sonarr using |all_series|_.
 
 .. |all_series| replace:: ``all_series``
-.. _all_series: https://testarr.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.all_series
+.. _all_series: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.all_series
 
 .. code-block:: python
 
@@ -90,7 +94,7 @@ Using a Series Object
 To add a series to Sonarr use |sonarr_add|_.
 
 .. |sonarr_add| replace:: ``add``
-.. _sonarr_add: https://testarr.readthedocs.io/en/latest/sonarr.html#arrapi.objs.Series.add
+.. _sonarr_add: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.objs.Series.add
 
 .. code-block:: python
 
@@ -99,7 +103,7 @@ To add a series to Sonarr use |sonarr_add|_.
 To edit a series in Sonarr use |sonarr_edit|_.
 
 .. |sonarr_edit| replace:: ``edit``
-.. _sonarr_edit: https://testarr.readthedocs.io/en/latest/sonarr.html#arrapi.objs.Series.edit
+.. _sonarr_edit: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.objs.Series.edit
 
 .. code-block:: python
 
@@ -108,7 +112,7 @@ To edit a series in Sonarr use |sonarr_edit|_.
 To delete a series in Sonarr use |sonarr_delete|_.
 
 .. |sonarr_delete| replace:: ``delete``
-.. _sonarr_delete: https://testarr.readthedocs.io/en/latest/sonarr.html#arrapi.objs.Series.delete
+.. _sonarr_delete: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.objs.Series.delete
 
 .. code-block:: python
 
@@ -120,7 +124,7 @@ Perform Operations on Multiple Series
 To add multiple Series to Sonarr use |add_multiple_series|_ with the Series' TVDb IDs.
 
 .. |add_multiple_series| replace:: ``add_multiple_series``
-.. _add_multiple_series: https://testarr.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.add_multiple_series
+.. _add_multiple_series: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.add_multiple_series
 
 .. code-block:: python
 
@@ -130,7 +134,7 @@ To add multiple Series to Sonarr use |add_multiple_series|_ with the Series' TVD
 To edit multiple Series in Sonarr use |edit_multiple_series|_ with the Series' TVDb IDs.
 
 .. |edit_multiple_series| replace:: ``edit_multiple_series``
-.. _edit_multiple_series: https://testarr.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.edit_multiple_series
+.. _edit_multiple_series: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.edit_multiple_series
 
 .. code-block:: python
 
@@ -140,7 +144,7 @@ To edit multiple Series in Sonarr use |edit_multiple_series|_ with the Series' T
 To delete multiple Series in Sonarr use |delete_multiple_series|_ with the Series' TVDb IDs.
 
 .. |delete_multiple_series| replace:: ``delete_multiple_series``
-.. _delete_multiple_series: https://testarr.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.delete_multiple_series
+.. _delete_multiple_series: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.delete_multiple_series
 
 .. code-block:: python
 
@@ -167,7 +171,7 @@ The ``apikey`` can be found by going to ``Settings > General > Security > API Ke
     radarr = RadarrAPI(baseurl, apikey)
 
 .. |RadarrAPI| replace:: ``RadarrAPI``
-.. _RadarrAPI: https://testarr.readthedocs.io/en/latest/radarr.html#module-arrapi.radarr
+.. _RadarrAPI: https://arrapi.readthedocs.io/en/latest/radarr.html#module-arrapi.radarr
 
 Using the RadarrAPI Instance
 ----------------------------------------------------------
@@ -177,7 +181,7 @@ Once you have a |RadarrAPI|_ instance you can use it to interact with the applic
 To add, edit, or delete a singular Movie you must first find the |Movie|_ object.
 
 .. |Movie| replace:: ``Movie``
-.. _Movie: https://testarr.readthedocs.io/en/latest/objs.html#movie
+.. _Movie: https://arrapi.readthedocs.io/en/latest/objs.html#movie
 
 Find a Movie Object
 ----------------------------------------------------------
@@ -187,7 +191,7 @@ There are three ways to find a |Movie|_ object.
 You can get a |Movie|_ object using |get_movie|_ and giving it a ``Radarr Movie ID`` or ``TVDb ID``.
 
 .. |get_movie| replace:: ``get_movie``
-.. _get_movie: https://testarr.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.get_movie
+.. _get_movie: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.get_movie
 
 .. code-block:: python
 
@@ -196,7 +200,7 @@ You can get a |Movie|_ object using |get_movie|_ and giving it a ``Radarr Movie 
 You can get a ``List`` of |Movie|_ objects using |search_movies|_ and giving it a search term.
 
 .. |search_movies| replace:: ``search_movies``
-.. _search_movies: https://testarr.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.search_movies
+.. _search_movies: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.search_movies
 
 .. code-block:: python
 
@@ -205,7 +209,7 @@ You can get a ``List`` of |Movie|_ objects using |search_movies|_ and giving it 
 You can get a ``List`` of all |Movie|_ objects in Radarr using |all_movies|_.
 
 .. |all_movies| replace:: ``all_movies``
-.. _all_movies: https://testarr.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.all_movies
+.. _all_movies: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.all_movies
 
 .. code-block:: python
 
@@ -217,7 +221,7 @@ Using a Movie Object
 To add a movie to Radarr use |radarr_add|_.
 
 .. |radarr_add| replace:: ``add``
-.. _radarr_add: https://testarr.readthedocs.io/en/latest/radarr.html#arrapi.objs.Series.add
+.. _radarr_add: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.objs.Series.add
 
 .. code-block:: python
 
@@ -226,7 +230,7 @@ To add a movie to Radarr use |radarr_add|_.
 To edit a movie in Radarr use |radarr_edit|_.
 
 .. |radarr_edit| replace:: ``edit``
-.. _radarr_edit: https://testarr.readthedocs.io/en/latest/radarr.html#arrapi.objs.Series.edit
+.. _radarr_edit: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.objs.Series.edit
 
 .. code-block:: python
 
@@ -235,7 +239,7 @@ To edit a movie in Radarr use |radarr_edit|_.
 To delete a movie in Radarr use |radarr_delete|_.
 
 .. |radarr_delete| replace:: ``delete``
-.. _radarr_delete: https://testarr.readthedocs.io/en/latest/radarr.html#arrapi.objs.Series.delete
+.. _radarr_delete: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.objs.Series.delete
 
 .. code-block:: python
 
@@ -247,7 +251,7 @@ Perform Operations on Multiple Movie
 To add multiple Movies to Radarr use |add_multiple_movies|_ with the Movie's TMDb IDs.
 
 .. |add_multiple_movies| replace:: ``add_multiple_movies``
-.. _add_multiple_movies: https://testarr.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.add_multiple_movies
+.. _add_multiple_movies: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.add_multiple_movies
 
 .. code-block:: python
 
@@ -257,7 +261,7 @@ To add multiple Movies to Radarr use |add_multiple_movies|_ with the Movie's TMD
 To edit multiple Movies in Radarr use |edit_multiple_movies|_ with the Movie's TMDb IDs.
 
 .. |edit_multiple_movies| replace:: ``edit_multiple_movies``
-.. _edit_multiple_movies: https://testarr.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.edit_multiple_movies
+.. _edit_multiple_movies: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.edit_multiple_movies
 
 .. code-block:: python
 
@@ -267,7 +271,7 @@ To edit multiple Movies in Radarr use |edit_multiple_movies|_ with the Movie's T
 To delete multiple Movies in Radarr use |delete_multiple_movies|_ with the Movie's TMDb IDs.
 
 .. |delete_multiple_movies| replace:: ``delete_multiple_movies``
-.. _delete_multiple_movies: https://testarr.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.delete_multiple_movies
+.. _delete_multiple_movies: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.delete_multiple_movies
 
 .. code-block:: python
 

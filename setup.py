@@ -11,8 +11,8 @@ with open("arrapi/__init__.py") as handle:
             version = re.findall('"([0-9\.]+?)"', line)[0]
             break
 
-with open("README.rst", "rb") as f:
-    long_descr = f.read().decode("utf-8")
+with open("README.rst", "r") as f:
+    long_descr = f.read()
 
 here = os.path.abspath(os.path.dirname(__file__))
 

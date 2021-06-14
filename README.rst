@@ -106,7 +106,7 @@ Using a Series Object
 To add a series to Sonarr use |sonarr_add|_.
 
 .. |sonarr_add| replace:: ``add``
-.. _sonarr_add: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.objs.Series.add
+.. _sonarr_add: https://arrapi.readthedocs.io/en/latest/objs.html#arrapi.objs.Series.add
 
 .. code-block:: python
 
@@ -115,7 +115,7 @@ To add a series to Sonarr use |sonarr_add|_.
 To edit a series in Sonarr use |sonarr_edit|_.
 
 .. |sonarr_edit| replace:: ``edit``
-.. _sonarr_edit: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.objs.Series.edit
+.. _sonarr_edit: https://arrapi.readthedocs.io/en/latest/objs.html#arrapi.objs.Series.edit
 
 .. code-block:: python
 
@@ -124,7 +124,7 @@ To edit a series in Sonarr use |sonarr_edit|_.
 To delete a series in Sonarr use |sonarr_delete|_.
 
 .. |sonarr_delete| replace:: ``delete``
-.. _sonarr_delete: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.objs.Series.delete
+.. _sonarr_delete: https://arrapi.readthedocs.io/en/latest/objs.html#arrapi.objs.Series.delete
 
 .. code-block:: python
 
@@ -233,7 +233,7 @@ Using a Movie Object
 To add a movie to Radarr use |radarr_add|_.
 
 .. |radarr_add| replace:: ``add``
-.. _radarr_add: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.objs.Series.add
+.. _radarr_add: https://arrapi.readthedocs.io/en/latest/objs.html#arrapi.objs.Movie.add
 
 .. code-block:: python
 
@@ -242,7 +242,7 @@ To add a movie to Radarr use |radarr_add|_.
 To edit a movie in Radarr use |radarr_edit|_.
 
 .. |radarr_edit| replace:: ``edit``
-.. _radarr_edit: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.objs.Series.edit
+.. _radarr_edit: https://arrapi.readthedocs.io/en/latest/objs.html#arrapi.objs.Movie.edit
 
 .. code-block:: python
 
@@ -251,7 +251,7 @@ To edit a movie in Radarr use |radarr_edit|_.
 To delete a movie in Radarr use |radarr_delete|_.
 
 .. |radarr_delete| replace:: ``delete``
-.. _radarr_delete: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.objs.Series.delete
+.. _radarr_delete: https://arrapi.readthedocs.io/en/latest/objs.html#arrapi.objs.Movie.delete
 
 .. code-block:: python
 

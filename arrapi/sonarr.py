@@ -204,7 +204,7 @@ class SonarrAPI(BaseAPI):
                             unmet_search: bool = True,
                             series_type: str = "standard",
                             tags: Optional[List[Union[str, int, Tag]]] = None
-                            ) -> Tuple[List[Series], List[int], List[int]]:
+                            ) -> Tuple[List[Series], List[Series], List[int]]:
         """ Adds multiple Series to Sonarr in a single call by their TVDb IDs.
 
             Parameters:
@@ -220,7 +220,7 @@ class SonarrAPI(BaseAPI):
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added to the Series.
 
             Returns:
-                Tuple[List[:class:`~arrapi.objs.Series`], List[int], List[int]]: List of Series that were able to be added, List of TVDb IDs of Series already in Sonarr, List of TVDb IDs of Series that could not be found.
+                Tuple[List[:class:`~arrapi.objs.Series`], List[:class:`~arrapi.objs.Series`], List[int]]: List of Series that were able to be added, List of Series already in Sonarr, List of TVDb IDs of Series that could not be found.
 
             Raises:
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
@@ -230,19 +230,18 @@ class SonarrAPI(BaseAPI):
                                              series_type=series_type, tags=tags)
         json = []
         not_found_ids = []
-        exist_ids = []
+        existing_series = []
         for tvdb_id in tvdb_ids:
             try:
                 series = tvdb_id if isinstance(tvdb_id, Series) else self.get_series(tvdb_id=tvdb_id)
-                json.append(series._get_add_data(options))
+                try:
+                    json.append(series._get_add_data(options))
+                except Exists:
+                    existing_series.append(series)
             except NotFound:
                 not_found_ids.append(tvdb_id)
-            except Exists:
-                exist_ids.append(tvdb_id)
-
         series = [Series(self, data=s) for s in self._post_series_import(json)] if len(json) > 0 else []
-
-        return series, exist_ids, not_found_ids
+        return series, existing_series, not_found_ids
 
     def edit_multiple_series(self, tvdb_ids: List[Union[Series, int]],
                              root_folder: Optional[Union[str, int, RootFolder]] = None,

@@ -169,7 +169,7 @@ class RadarrAPI(BaseAPI):
                             search: bool = True,
                             minimum_availability: str = "announced",
                             tags: Optional[List[Union[str, int, Tag]]] = None
-                            ) -> Tuple[List[Movie], List[int], List[int]]:
+                            ) -> Tuple[List[Movie], List[Movie], List[int]]:
         """ Adds multiple Movies to Radarr in a single call by their TMDb IDs.
 
             Parameters:
@@ -182,7 +182,7 @@ class RadarrAPI(BaseAPI):
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added to the Movies.
 
             Returns:
-                Tuple[List[:class:`~arrapi.objs.Movie`], List[int], List[int]]: List of Movies that were able to be added, List of TMDb IDs of Movies already in Radarr, List of TMDb IDs of Movies that could not be found.
+                Tuple[List[:class:`~arrapi.objs.Movie`], List[:class:`~arrapi.objs.Movie`], List[int]]: List of Movies that were able to be added, List of Movies already in Radarr, List of TMDb IDs of Movies that could not be found.
 
             Raises:
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
@@ -191,18 +191,18 @@ class RadarrAPI(BaseAPI):
                                              minimum_availability=minimum_availability, tags=tags)
         json = []
         not_found_ids = []
-        exist_ids = []
+        existing_movies = []
         for tmdb_id in tmdb_ids:
             try:
                 movie = tmdb_id if isinstance(tmdb_id, Movie) else self.get_movie(tmdb_id=tmdb_id)
-                json.append(movie._get_add_data(options))
+                try:
+                    json.append(movie._get_add_data(options))
+                except Exists:
+                    existing_movies.append(movie)
             except NotFound:
                 not_found_ids.append(tmdb_id)
-            except Exists:
-                exist_ids.append(tmdb_id)
         movies = [Movie(self, data=m) for m in self._post_movie_import(json)] if len(json) > 0 else []
-
-        return movies, exist_ids, not_found_ids
+        return movies, existing_movies, not_found_ids
 
     def edit_multiple_movies(self, tmdb_ids: List[Union[int, Movie]],
                              root_folder: Optional[Union[str, int, RootFolder]] = None,

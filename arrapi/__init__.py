@@ -3,7 +3,7 @@ from .objs import QualityProfile, LanguageProfile, RemotePathMapping, RootFolder
 from .radarr import RadarrAPI
 from .sonarr import SonarrAPI
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 __author__ = "Nathan Taggart"
 __credits__ = "meisnate12"
 __package_name__ = "arrapi"

@@ -59,7 +59,7 @@ setup(name="arrapi",
       license="MIT",
       packages=["arrapi"],
       python_requires=">=3.5",
-      keywords=["arrapi", "sonarr", "radarr" "arr", "wrapper", "api"],
+      keywords=["arrapi", "sonarr", "radarr", "arr", "wrapper", "api"],
       install_requires=[
           "requests"
       ],

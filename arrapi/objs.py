@@ -53,8 +53,26 @@ class QualityProfile(BaseArr):
             name (str): Name of the Quality Profile.
     """
 
-    def __init__(self, data):
+    def __init__(self, arr, data):
         super().__init__(data=data)
+        self._arr = arr
+        self.name = util.parse(self._data, attribute="name")
+        self._name = self.name
+        self.id = util.parse(self._data, attribute="id", value_type="int")
+        self._loading = False
+
+
+class MetadataProfile(BaseArr):
+    """ Represents a single Metadata Profile.
+
+        Attributes:
+            id (int): ID of the Metadata Profile.
+            name (str): Name of the Metadata Profile.
+    """
+
+    def __init__(self, arr, data):
+        super().__init__(data=data)
+        self._arr = arr
         self.name = util.parse(self._data, attribute="name")
         self._name = self.name
         self.id = util.parse(self._data, attribute="id", value_type="int")
@@ -69,8 +87,9 @@ class LanguageProfile(BaseArr):
             name (str): Name of the Language Profile.
     """
 
-    def __init__(self, data):
+    def __init__(self, sonarr, data):
         super().__init__(data=data)
+        self._sonarr = sonarr
         self.name = util.parse(self._data, attribute="name")
         self._name = self.name
         self.id = util.parse(self._data, attribute="id", value_type="int")
@@ -87,8 +106,9 @@ class RemotePathMapping(BaseArr):
             remotePath (str): Remote Path of the Remote Path Mapping.
     """
 
-    def __init__(self, data):
+    def __init__(self, arr, data):
         super().__init__(data=data)
+        self._arr = arr
         self.host = util.parse(self._data, attribute="host")
         self._name = self.host
         self.remotePath = util.parse(self._data, attribute="remotePath")
@@ -113,8 +133,9 @@ class RootFolder(BaseArr):
             unmappedFolders (List[UnmappedFolder]): Unmapped Folders in the Root Folder. (Only when loaded using :class:`~arrapi.radarr.SonarrAPI` V3 or :class:`~arrapi.radarr.RadarrAPI` V3)
     """
 
-    def __init__(self, data):
+    def __init__(self, arr, data):
         super().__init__(data=data)
+        self._arr = arr
         self.path = util.parse(self._data, attribute="path")
         if "name" in self._data:
             self.name = util.parse(self._data, attribute="name")
@@ -146,8 +167,9 @@ class UnmappedFolder(BaseArr):
             path (str): Path of the Unmapped Folder.
     """
 
-    def __init__(self, data):
+    def __init__(self, arr, data):
         super().__init__(data=data)
+        self._arr = arr
         self.name = util.parse(self._data, attribute="name")
         self.path = util.parse(self._data, attribute="path")
         self._name = self.path
@@ -564,7 +586,7 @@ class Series(BaseArr):
             self.rating_votes = util.parse(data["rating"], attribute="votes", value_type="int")
             self.rating_value = util.parse(data["rating"], attribute="value", value_type="float")
         self.id = util.parse(data, attribute="id", value_type="int", default_is_none=True)
-        self.seasons = [Season(s) for s in data["seasons"]]
+        self.seasons = [Season(self._sonarr, s) for s in data["seasons"]]
 
         if self._sonarr.v3:
             self.ended = util.parse(data, attribute="ended", value_type="bool")
@@ -726,8 +748,9 @@ class Season(BaseArr):
             nextAiring (datetime): Next Airing Date for an Episode of this Season.
             previousAiring (datetime): Previous Airing Date for the latest Episode of this Season.
     """
-    def __init__(self, data):
+    def __init__(self, sonarr, data):
         super().__init__(data=data)
+        self._sonarr = sonarr
         self.seasonNumber = util.parse(self._data, attribute="seasonNumber", value_type="int")
         self._name = f"Season {self.seasonNumber}"
         self.monitored = util.parse(self._data, attribute="monitored", value_type="bool")

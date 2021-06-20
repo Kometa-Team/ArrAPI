@@ -323,7 +323,7 @@ class SonarrAPI(BaseAPI):
             Returns:
                 List[:class:`~arrapi.objs.LanguageProfile`]: List of all Language Profiles
         """
-        return [LanguageProfile(data) for data in self._get_languageProfile()]
+        return [LanguageProfile(self, data) for data in self._get_languageProfile()]
 
     def _validate_language_profile(self, language_profile):
         """ Validate Quality Profile options. """

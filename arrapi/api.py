@@ -5,7 +5,7 @@ from requests.exceptions import RequestException
 from json.decoder import JSONDecodeError
 from arrapi import util
 from .exceptions import ArrException, ConnectionFailure, Invalid, NotFound, Unauthorized
-from .objs import SystemStatus, QualityProfile, RootFolder, Tag, RemotePathMapping
+from .objs import SystemStatus, QualityProfile, MetadataProfile, RootFolder, Tag, RemotePathMapping
 
 logger = logging.getLogger(__name__)
 
@@ -211,7 +211,7 @@ class BaseAPI(ABC):
             Returns:
                 List[:class:`~arrapi.objs.QualityProfile`]: List of all Quality Profiles
         """
-        return [QualityProfile(data) for data in self._get_qualityProfile()]
+        return [QualityProfile(self, data) for data in self._get_qualityProfile()]
 
     def _get_rootfolder(self):
         """ GET /rootfolder """
@@ -234,7 +234,7 @@ class BaseAPI(ABC):
             Returns:
                 List[:class:`~arrapi.objs.RootFolder`]: List of all Root Folders.
         """
-        return [RootFolder(data) for data in self._get_rootfolder()]
+        return [RootFolder(self, data) for data in self._get_rootfolder()]
 
     def _get_remotePathMapping(self):
         """ GET /remotePathMapping """
@@ -246,7 +246,7 @@ class BaseAPI(ABC):
             Returns:
                 List[:class:`~arrapi.objs.RemotePathMapping`]: List of all Remote Path Mappings.
         """
-        return [RemotePathMapping(data) for data in self._get_remotePathMapping()]
+        return [RemotePathMapping(self, data) for data in self._get_remotePathMapping()]
 
     def _get_system_status(self):
         """ GET /system/status """

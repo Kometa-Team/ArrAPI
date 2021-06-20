@@ -104,16 +104,36 @@ class RootFolder(BaseArr):
             id (int): ID of the Root Folder.
             path (str): Path of the Root Folder.
             freeSpace (int): Free Space in the Root Folder.
-            unmappedFolders (List[UnmappedFolder]): Unmapped Folders in the Root Folder.
+            name (str): Name of the Root Folder. (Only when loaded using :class:`~arrapi.lidarr.LidarrAPI` or :class:`~arrapi.readarr.ReadarrAPI`)
+            defaultMetadataProfileId (int): Default Metadata Profile ID of the Root Folder. (Only when loaded using :class:`~arrapi.lidarr.LidarrAPI` or :class:`~arrapi.readarr.ReadarrAPI`)
+            defaultQualityProfileId (int): Default Quality Profile ID of the Root Folder. (Only when loaded using :class:`~arrapi.lidarr.LidarrAPI` or :class:`~arrapi.readarr.ReadarrAPI`)
+            defaultMonitorOption (int): Default Monitor Option of the Root Folder. (Only when loaded using :class:`~arrapi.lidarr.LidarrAPI` or :class:`~arrapi.readarr.ReadarrAPI`)
+            defaultTags (int): Default Tags of the Root Folder. (Only when loaded using :class:`~arrapi.lidarr.LidarrAPI` or :class:`~arrapi.readarr.ReadarrAPI`)
+            isCalibreLibrary (bool): If the Root Folder is a Calibre Library. (Only when loaded using :class:`~arrapi.readarr.ReadarrAPI`)
+            unmappedFolders (List[UnmappedFolder]): Unmapped Folders in the Root Folder. (Only when loaded using :class:`~arrapi.radarr.SonarrAPI` V3 or :class:`~arrapi.radarr.RadarrAPI` V3)
     """
 
     def __init__(self, data):
         super().__init__(data=data)
         self.path = util.parse(self._data, attribute="path")
-        self._name = self.path
+        if "name" in self._data:
+            self.name = util.parse(self._data, attribute="name")
+            self._name = self.name
+        else:
+            self._name = self.path
+        if "defaultMetadataProfileId" in self._data:
+            self.defaultMetadataProfileId = util.parse(self._data, attribute="defaultMetadataProfileId", value_type="int")
+        if "defaultQualityProfileId" in self._data:
+            self.defaultQualityProfileId = util.parse(self._data, attribute="defaultQualityProfileId", value_type="int")
+        if "defaultMonitorOption" in self._data:
+            self.defaultMonitorOption = util.parse(self._data, attribute="defaultMonitorOption", value_type="str")
+        if "defaultTags" in self._data:
+            self.defaultTags = util.parse(self._data, attribute="defaultTags", value_type="intList")
+        if "isCalibreLibrary" in self._data:
+            self.isCalibreLibrary = util.parse(self._data, attribute="isCalibreLibrary", value_type="bool")
         self.freeSpace = util.parse(self._data, attribute="freeSpace", value_type="int")
-        self.unmappedFolders = [UnmappedFolder(folder) for folder in
-                                self._data["unmappedFolders"]] if "unmappedFolders" in self._data else []
+        if "unmappedFolders" in self._data:
+            self.unmappedFolders = [UnmappedFolder(self._arr, folder) for folder in self._data["unmappedFolders"]]
         self.id = util.parse(self._data, attribute="id", value_type="int")
         self._loading = False
 
@@ -184,7 +204,9 @@ class Tag(BaseArr):
             restrictionIds (List[int]): Restriction IDs. (Only when loaded with details)
             importListIds (List[int]): Import List IDs. (Only when loaded with details)
             movieIds (List[int]): Radarr Movie IDs. (Only when loaded with details using :class:`~arrapi.radarr.RadarrAPI`)
-            seriesIds (List[int]): Sonarr Movie IDs. (Only when loaded with details using :class:`~arrapi.radarr.SonarrAPI`)
+            seriesIds (List[int]): Sonarr Series IDs. (Only when loaded with details using :class:`~arrapi.radarr.SonarrAPI`)
+            artistIds (List[int]): Lidarr Artist IDs. (Only when loaded with details using :class:`~arrapi.lidarr.LidarrAPI`)
+            authorIds (List[int]): Readarr Author IDs. (Only when loaded with details using :class:`~arrapi.readarr.ReadarrAPI`)
     """
 
     def __init__(self, arr, data):
@@ -209,6 +231,10 @@ class Tag(BaseArr):
             self.movieIds = util.parse(data, attribute="movieIds", value_type="intList")
         if "seriesIds" in data:
             self.seriesIds = util.parse(data, attribute="seriesIds", value_type="intList")
+        if "artistIds" in data:
+            self.artistIds = util.parse(data, attribute="artistIds", value_type="intList")
+        if "authorIds" in data:
+            self.authorIds = util.parse(data, attribute="authorIds", value_type="intList")
         self._loading = False
 
     def reload(self, detail: bool = False) -> None:

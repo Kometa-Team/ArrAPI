@@ -10,18 +10,21 @@ from .objs import SystemStatus, QualityProfile, RootFolder, Tag, RemotePathMappi
 logger = logging.getLogger(__name__)
 
 class BaseAPI(ABC):
-    """ Base class for :class:`~arrapi.sonarr.SonarrAPI` and :class:`~arrapi.radarr.RadarrAPI`
-    containing API calls that are identical between Sonarr and Radarr. """
+    """ Base class for :class:`~arrapi.sonarr.SonarrAPI`, :class:`~arrapi.radarr.RadarrAPI`,
+    :class:`~arrapi.lidarr.LidarrAPI`, and :class:`~arrapi.readarr.ReadarrAPI`
+    containing API calls that are identical between Sonarr, Radarr, Lidarr, and Readarr. """
 
     @abstractmethod
-    def __init__(self, url, apikey):
+    def __init__(self, url, apikey, v1=False):
         self.url = url
         self.apikey = apikey
+        self.v1 = v1
         self.v3 = False
         status = self.system_status()
         if status.version is None:
             raise ConnectionFailure(f"Failed to Connect to {self.url}")
-        self.v3 = status.version[0] == "3"
+        if v1 is False:
+            self.v3 = status.version[0] == "3"
         self.apply_tags_options = ["add", "remove", "replace"]
 
     def _get(self, path, **kwargs):
@@ -45,7 +48,7 @@ class BaseAPI(ABC):
         url_params = {"apikey": f"{self.apikey}"}
         for kwarg in kwargs:
             url_params[kwarg] = kwargs[kwarg]
-        request_url = f"{self.url}/api{'/v3' if self.v3 else ''}/{path}"
+        request_url = f"{self.url}/api{'/v1' if self.v1 else '/v3' if self.v3 else ''}/{path}"
         if json is not None:
             logger.debug(f"Request JSON {json}")
         try:
@@ -71,7 +74,7 @@ class BaseAPI(ABC):
 
     def _get_tag(self, detail=False):
         """ GET /tag and GET /tag/detail """
-        return self._get("tag/detail" if detail and self.v3 else "tag")
+        return self._get("tag/detail" if detail and (self.v1 or self.v3) else "tag")
 
     def _post_tag(self, label):
         """ POST /tag """
@@ -79,7 +82,7 @@ class BaseAPI(ABC):
 
     def _get_tag_id(self, tag_id, detail=False):
         """ GET /tag/{id} and GET /tag/detail/{id} """
-        return self._get(f"tag/detail/{tag_id}" if detail and self.v3 else f"tag/{tag_id}")
+        return self._get(f"tag/detail/{tag_id}" if detail and (self.v1 or self.v3) else f"tag/{tag_id}")
 
     def _put_tag_id(self, tag_id, label):
         """ PUT /tag/{id} """
@@ -189,7 +192,7 @@ class BaseAPI(ABC):
 
     def _get_qualityProfile(self):
         """ GET /qualityProfile for v3 and GET /profile for v2 """
-        return self._get("qualityProfile" if self.v3 else "profile")
+        return self._get("qualityProfile" if self.v1 or self.v3 else "profile")
 
     def _validate_quality_profile(self, quality_profile):
         """ Validate Quality Profile options. """
@@ -256,3 +259,34 @@ class BaseAPI(ABC):
                 :class:`~arrapi.objs.SystemStatus`: System Status Information.
         """
         return SystemStatus(self)
+
+class BaseV1API(BaseAPI):
+    """ Base class for :class:`~arrapi.lidarr.LidarrAPI` and :class:`~arrapi.readarr.ReadarrAPI`
+    containing API calls that are identical between Sonarr and Radarr. """
+
+    @abstractmethod
+    def __init__(self, url, apikey):
+        super().__init__(url, apikey, v1=True)
+
+    def _get_metadataProfile(self):
+        """ GET /metadataProfile """
+        return self._get("metadataProfile")
+
+    def _validate_metadata_profile(self, metadata_profile):
+        """ Validate Metadata Profile options. """
+        options = []
+        for profile in self.metadata_profile():
+            options.append(profile)
+            if (isinstance(metadata_profile, MetadataProfile) and profile.id == metadata_profile.id) \
+                    or (isinstance(metadata_profile, int) and profile.id == metadata_profile) \
+                    or profile.name == metadata_profile:
+                return profile.id
+        raise Invalid(f"Invalid Metadata Profile: '{metadata_profile}' Options: {options}")
+
+    def metadata_profile(self) -> List[MetadataProfile]:
+        """ Gets every :class:`~arrapi.objs.MetadataProfile`.
+
+            Returns:
+                List[:class:`~arrapi.objs.MetadataProfile`]: List of all Metadata Profiles
+        """
+        return [MetadataProfile(self, data) for data in self._get_metadataProfile()]

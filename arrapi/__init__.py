@@ -1,7 +1,9 @@
 from .exceptions import ArrException, ConnectionFailure, Exists, Invalid, NotFound, Unauthorized
-from .objs import QualityProfile, LanguageProfile, RemotePathMapping, RootFolder, UnmappedFolder, SystemStatus, Tag, Movie, Series, Season
-from .radarr import RadarrAPI
+from .objs import QualityProfile, LanguageProfile, MetadataProfile, RemotePathMapping, RootFolder, UnmappedFolder, SystemStatus, Tag, Movie, Series, Season
 from .sonarr import SonarrAPI
+from .radarr import RadarrAPI
+from .lidarr import LidarrAPI
+from .readarr import ReadarrAPI
 
 __version__ = "1.0.0"
 __author__ = "Nathan Taggart"
@@ -17,6 +19,7 @@ __all__ = [
     "SonarrAPI",
     "QualityProfile",
     "LanguageProfile",
+    "MetadataProfile",
     "RemotePathMapping",
     "RootFolder",
     "UnmappedFolder",

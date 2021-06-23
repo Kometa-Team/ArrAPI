@@ -24,7 +24,7 @@ class BaseAPI(ABC):
         if status.version is None:
             raise ConnectionFailure(f"Failed to Connect to {self.url}")
         if v1 is False:
-            self.v3 = status.version[0] == "3"
+            self.v3 = int(status.version[0]) > 2
         self.apply_tags_options = ["add", "remove", "replace"]
 
     def _get(self, path, **kwargs):

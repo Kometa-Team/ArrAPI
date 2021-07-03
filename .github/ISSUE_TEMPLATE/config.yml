@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentaion
+    url: https://arrapi.readthedocs.io/en/latest/
+    about: Please check the Documentaion to see if your question has already been answered.
+  - name: Discussions
+    url: https://github.com/meisnate12/ArrAPI/discussions
+    about: Please use Discussions to ask for support.

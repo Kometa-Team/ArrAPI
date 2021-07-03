@@ -268,7 +268,7 @@ class SonarrAPI(BaseAPI):
                 season_folder (Optional[bool]): Use Season Folders for the Series.
                 series_type (Optional[str]): Series Type to change the Series to. Valid options are standard, daily, or anime.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added, replaced, or removed from the Series.
-                apply_tags (str): How you want to edit the Tags. Valid options are added, replaced, or removed.
+                apply_tags (str): How you want to edit the Tags. Valid options are add, replace, or remove.
 
             Returns:
                 Tuple[List[:class:`~arrapi.objs.Series`], List[int]]: List of TVDb that were able to be edited, List of TVDb IDs that could not be found in Sonarr.

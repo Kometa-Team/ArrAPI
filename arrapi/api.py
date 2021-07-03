@@ -19,8 +19,12 @@ class BaseAPI(ABC):
         self.url = url
         self.apikey = apikey
         self.v1 = v1
-        self.v3 = False
-        status = self.system_status()
+        self.v3 = True
+        try:
+            status = self.system_status()
+        except NotFound:
+            self.v3 = False
+            status = self.system_status()
         if status.version is None:
             raise ConnectionFailure(f"Failed to Connect to {self.url}")
         if v1 is False:

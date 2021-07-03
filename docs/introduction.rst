@@ -1,24 +1,25 @@
 ArrAPI
 ==========================================================
 
-.. image:: https://img.shields.io/readthedocs/arrapi
+.. image:: https://img.shields.io/readthedocs/arrapi?style=plastic
     :target: https://arrapi.readthedocs.io/en/latest/?badge=latest
     :alt: Read the Docs
 
-.. image:: https://img.shields.io/github/v/release/meisnate12/ArrAPI
+.. image:: https://img.shields.io/github/v/release/meisnate12/ArrAPI?style=plastic
     :target: https://github.com/meisnate12/ArrAPI/releases
     :alt: GitHub release (latest by date)
 
-.. image:: https://img.shields.io/pypi/v/ArrAPI
+.. image:: https://img.shields.io/pypi/v/ArrAPI?style=plastic
     :target: https://pypi.org/project/arrapi/
     :alt: PyPI
 
-.. image:: https://img.shields.io/github/commits-since/meisnate12/ArrAPI/latest
+.. image:: https://img.shields.io/github/commits-since/meisnate12/ArrAPI/latest?style=plastic
     :target: https://github.com/meisnate12/ArrAPI/commits/master
     :alt: GitHub commits since latest release (by date) for a branch
-|
-.. image:: https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif
-    :target: https://www.paypal.com/donate?business=JTK3CVKF3ZHP2&item_name=ArrAPI&currency_code=USD
+
+.. image:: https://img.shields.io/badge/-Sponsor_or_Donate-blueviolet?style=plastic
+    :target: https://github.com/sponsors/meisnate12
+    :alt: GitHub Sponsor
 
 Overview
 ----------------------------------------------------------

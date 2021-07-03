@@ -223,7 +223,7 @@ class RadarrAPI(BaseAPI):
                 monitored (Optional[bool]): Monitor the Movie.
                 minimum_availability (Optional[str]): Minimum Availability to change the Movie to. Valid options are announced, inCinemas, released, or preDB.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added, replaced, or removed from the Movie.
-                apply_tags (str): How you want to edit the Tags. Valid options are added, replaced, or removed.
+                apply_tags (str): How you want to edit the Tags. Valid options are add, replace, or remove.
 
             Returns:
                 Tuple[List[:class:`~arrapi.objs.Movie`], List[int]]: List of Movies that were able to be edited, List of TMDb IDs that could not be found in Radarr.

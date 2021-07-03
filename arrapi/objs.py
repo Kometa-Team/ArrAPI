@@ -444,7 +444,7 @@ class Movie(BaseArr):
                 monitored (Optional[bool]): Monitor the Movie.
                 minimum_availability (Optional[str]): Minimum Availability to change the Movie to. Valid options are announced, inCinemas, released, or preDB.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added, replaced, or removed from the Movie.
-                apply_tags (str): How you want to edit the Tags. Valid options are added, replaced, or removed.
+                apply_tags (str): How you want to edit the Tags. Valid options are add, replace, or remove.
 
             Raises:
                 :class:`ValueError`: When theres no options given.
@@ -687,7 +687,7 @@ class Series(BaseArr):
                 season_folder (Optional[bool]): Use Season Folders for the Series.
                 series_type (Optional[str]): Series Type to change the Series to. Valid options are standard, daily, or anime.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added, replaced, or removed from the Series.
-                apply_tags (str): How you want to edit the Tags. Valid options are added, replaced, or removed.
+                apply_tags (str): How you want to edit the Tags. Valid options are add, replace, or remove.
 
             Raises:
                 :class:`ValueError`: When theres no options given.

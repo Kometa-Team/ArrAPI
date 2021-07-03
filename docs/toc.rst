@@ -3,7 +3,7 @@
    :caption: Overview
    :titlesonly:
 
-   index
+   intro
    exceptions
 
 .. toctree::

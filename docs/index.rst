@@ -279,5 +279,5 @@ Usage & Contributions
   the `MIT license <https://github.com/meisnate12/arrapi/blob/master/LICENSE.txt>`_.
 
 Table of Contents
-==========================================================
+----------------------------------------------------------
 .. include:: toc.rst

@@ -277,3 +277,7 @@ Usage & Contributions
 * Source is available on the `Github Project Page <https://github.com/meisnate12/arrapi>`_.
 * Contributors to ArrAPI own their own contributions and may distribute that code under
   the `MIT license <https://github.com/meisnate12/arrapi/blob/master/LICENSE.txt>`_.
+
+Table of Contents
+==========================================================
+.. include:: toc.rst

@@ -1,4 +1,5 @@
 from arrapi import util
+from requests import Session
 from typing import Optional, Union, List, Tuple
 from .api import BaseV1API
 from .exceptions import NotFound, Invalid, Exists
@@ -10,8 +11,9 @@ class LidarrAPI(BaseV1API):
 
         Parameters:
             url (str): URL of Lidarr application.
-            apikey (str) apikey for the Lidarr application.
+            apikey (str): apikey for the Lidarr application.
+            session (Optional[Session]): Session object to use.
      """
 
-    def __init__(self, url: str, apikey: str) -> None:
-        super().__init__(url, apikey)
+    def __init__(self, url: str, apikey: str, session: Optional[Session] = None) -> None:
+        super().__init__(url, apikey, session)

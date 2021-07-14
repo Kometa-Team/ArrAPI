@@ -1,4 +1,5 @@
 from arrapi import util
+from requests import Session
 from typing import Optional, Union, List, Tuple
 from .api import BaseAPI
 from .exceptions import NotFound, Invalid, Exists
@@ -10,11 +11,12 @@ class RadarrAPI(BaseAPI):
 
         Parameters:
             url (str): URL of Radarr application.
-            apikey (str) apikey for the Radarr application.
+            apikey (str): apikey for the Radarr application.
+            session (Optional[Session]): Session object to use.
      """
 
-    def __init__(self, url: str, apikey: str) -> None:
-        super().__init__(url, apikey)
+    def __init__(self, url: str, apikey: str, session: Optional[Session] = None) -> None:
+        super().__init__(url, apikey, session=session)
         self.minimum_availability_options = ["announced", "inCinemas", "released", "preDB"]
 
     def _get_movie(self, tmdb_id=None):

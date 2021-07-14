@@ -1,9 +1,10 @@
-import logging, requests
+import logging
 from abc import ABC, abstractmethod
-from typing import List
-from requests.exceptions import RequestException
-from json.decoder import JSONDecodeError
 from arrapi import util
+from json.decoder import JSONDecodeError
+from requests import Session
+from requests.exceptions import RequestException
+from typing import List
 from .exceptions import ArrException, ConnectionFailure, Invalid, NotFound, Unauthorized
 from .objs import SystemStatus, QualityProfile, MetadataProfile, RootFolder, Tag, RemotePathMapping
 
@@ -15,9 +16,10 @@ class BaseAPI(ABC):
     containing API calls that are identical between Sonarr, Radarr, Lidarr, and Readarr. """
 
     @abstractmethod
-    def __init__(self, url, apikey, v1=False):
+    def __init__(self, url, apikey, v1=False, session=None):
         self.url = url
         self.apikey = apikey
+        self.session = Session() if session is None else session
         self.v1 = v1
         self.v3 = True
         try:
@@ -57,13 +59,13 @@ class BaseAPI(ABC):
             logger.debug(f"Request JSON {json}")
         try:
             if request_type == "delete":
-                response = requests.delete(request_url, json=json, params=url_params)
+                response = self.session.delete(request_url, json=json, params=url_params)
             elif request_type == "post":
-                response = requests.post(request_url, json=json, params=url_params)
+                response = self.session.post(request_url, json=json, params=url_params)
             elif request_type == "put":
-                response = requests.put(request_url, json=json, params=url_params)
+                response = self.session.put(request_url, json=json, params=url_params)
             else:
-                response = requests.get(request_url, params=url_params)
+                response = self.session.get(request_url, params=url_params)
             response_json = response.json()
         except (RequestException, JSONDecodeError):
             raise ConnectionFailure(f"Failed to Connect to {self.url}")
@@ -269,8 +271,8 @@ class BaseV1API(BaseAPI):
     containing API calls that are identical between Sonarr and Radarr. """
 
     @abstractmethod
-    def __init__(self, url, apikey):
-        super().__init__(url, apikey, v1=True)
+    def __init__(self, url, apikey, session=None):
+        super().__init__(url, apikey, v1=True, session=session)
 
     def _get_metadataProfile(self):
         """ GET /metadataProfile """

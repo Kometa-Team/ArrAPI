@@ -69,13 +69,13 @@ class BaseAPI(ABC):
             response_json = response.json()
         except (RequestException, JSONDecodeError):
             raise ConnectionFailure(f"Failed to Connect to {self.url}")
-        logger.debug(f"Response ({response.status_code}) {response_json}")
+        logger.debug(f"Response ({response.status_code} [{response.reason}]) {response_json}")
         if response.status_code == 401:
-            raise Unauthorized("Invalid API Key")
+            raise Unauthorized(f"({response.status_code} [{response.reason}]) Invalid API Key {response_json}")
         elif response.status_code == 404:
-            raise NotFound("Item Not Found")
+            raise NotFound(f"({response.status_code} [{response.reason}]) Item Not Found {response_json}")
         elif response.status_code >= 400:
-            raise ArrException(f"({response.status_code}) {response_json}")
+            raise ArrException(f"({response.status_code} [{response.reason}]) {response_json}")
         return response_json
 
     def _get_tag(self, detail=False):

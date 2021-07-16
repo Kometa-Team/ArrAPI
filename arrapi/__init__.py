@@ -5,7 +5,7 @@ from .radarr import RadarrAPI
 from .lidarr import LidarrAPI
 from .readarr import ReadarrAPI
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 __author__ = "Nathan Taggart"
 __credits__ = "meisnate12"
 __package_name__ = "arrapi"

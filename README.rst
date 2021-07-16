@@ -13,6 +13,10 @@ ArrAPI
     :target: https://pypi.org/project/arrapi/
     :alt: PyPI
 
+.. image:: https://img.shields.io/pypi/dm/arrapi.svg?style=plastic
+    :target: https://pypi.org/project/arrapi/
+    :alt: Downloads
+
 .. image:: https://img.shields.io/github/commits-since/meisnate12/ArrAPI/latest?style=plastic
     :target: https://github.com/meisnate12/ArrAPI/commits/master
     :alt: GitHub commits since latest release (by date) for a branch

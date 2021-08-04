@@ -112,18 +112,25 @@ class RadarrAPI(BaseAPI):
         """ Validate Minimum Availability options. """
         return util.validate_options("Minimum Availability", minimum_availability, self.minimum_availability_options)
 
-    def _validate_tmdb_ids(self, tmdb_ids):
-        """ Validate TMDb IDs. """
+    def _validate_ids(self, ids):
+        """ Validate IDs. """
         valid_ids = []
         invalid_ids = []
-        tmdb_radarr_ids = {m.tmdbId: m for m in self.all_movies()}
-        for tmdb_id in tmdb_ids:
-            if isinstance(tmdb_id, Movie):
-                tmdb_id = tmdb_id.tmdbId
-            if tmdb_id in tmdb_radarr_ids:
-                valid_ids.append(tmdb_radarr_ids[tmdb_id].id)
+        tmdb_radarr_ids = {}
+        imdb_radarr_ids = {}
+        for m in self.all_movies():
+            tmdb_radarr_ids[m.tmdbId] = m
+            tmdb_radarr_ids[str(m.tmdbId)] = m
+            imdb_radarr_ids[m.imdbId] = m
+        for _id in ids:
+            if isinstance(_id, Movie):
+                valid_ids.append(_id.id)
+            elif _id and _id in imdb_radarr_ids:
+                valid_ids.append(imdb_radarr_ids[_id].id)
+            elif _id in tmdb_radarr_ids:
+                valid_ids.append(tmdb_radarr_ids[_id].id)
             else:
-                invalid_ids.append(tmdb_id)
+                invalid_ids.append(_id)
         return valid_ids, invalid_ids
 
     def get_movie(self, movie_id: Optional[int] = None, tmdb_id: Optional[int] = None, imdb_id: Optional[str] = None) -> Movie:
@@ -164,7 +171,7 @@ class RadarrAPI(BaseAPI):
         """
         return [Movie(self, data=d) for d in self._get_movie_lookup(term)]
 
-    def add_multiple_movies(self, tmdb_ids: List[Union[Movie, int]],
+    def add_multiple_movies(self, ids: List[Union[int, str, Movie]],
                             root_folder: Union[str, int, RootFolder],
                             quality_profile: Union[str, int, QualityProfile],
                             monitor: bool = True,
@@ -175,7 +182,7 @@ class RadarrAPI(BaseAPI):
         """ Adds multiple Movies to Radarr in a single call by their TMDb IDs.
 
             Parameters:
-                tmdb_ids (List[Union[int, Movie]]): List of TMDB IDs or Movie lookups to add.
+                ids (List[Union[int, str, Movie]]): List of TMDB IDs, IMDb IDs, or Movie lookups to add.
                 root_folder (Union[str, int, RootFolder]): Root Folder for the Movies.
                 quality_profile (Union[str, int, QualityProfile]): Quality Profile for the Movies.
                 monitor (bool): Monitor the Movies.
@@ -194,19 +201,24 @@ class RadarrAPI(BaseAPI):
         json = []
         not_found_ids = []
         existing_movies = []
-        for tmdb_id in tmdb_ids:
+        for item in ids:
             try:
-                movie = tmdb_id if isinstance(tmdb_id, Movie) else self.get_movie(tmdb_id=tmdb_id)
+                if isinstance(item, Movie):
+                    movie = item
+                elif str(item).startswith("tt"):
+                    movie = self.get_movie(imdb_id=item)
+                else:
+                    movie = self.get_movie(tmdb_id=item)
                 try:
                     json.append(movie._get_add_data(options))
                 except Exists:
                     existing_movies.append(movie)
             except NotFound:
-                not_found_ids.append(tmdb_id)
+                not_found_ids.append(item)
         movies = [Movie(self, data=m) for m in self._post_movie_import(json)] if len(json) > 0 else []
         return movies, existing_movies, not_found_ids
 
-    def edit_multiple_movies(self, tmdb_ids: List[Union[int, Movie]],
+    def edit_multiple_movies(self, ids: List[Union[int, str, Movie]],
                              root_folder: Optional[Union[str, int, RootFolder]] = None,
                              move_files: bool = False,
                              quality_profile: Optional[Union[str, int, QualityProfile]] = None,
@@ -218,7 +230,7 @@ class RadarrAPI(BaseAPI):
         """ Edit multiple Movies in Radarr by their TMDb IDs.
 
             Parameters:
-                tmdb_ids (List[Union[int, Movie]]): List of TMDb IDs or Movie objects you want to edit.
+                ids (List[Union[int, str, Movie]]): List of TMDb IDs, IMDb IDs, or Movie objects you want to edit.
                 root_folder (Union[str, int, RootFolder]): Root Folder to change the Movie to.
                 move_files (bool): When changing the root folder do you want to move the files to the new path.
                 quality_profile (Optional[Union[str, int, QualityProfile]]): Quality Profile to change the Movie to.
@@ -237,27 +249,27 @@ class RadarrAPI(BaseAPI):
                                            quality_profile=quality_profile, monitored=monitored,
                                            minimum_availability=minimum_availability, tags=tags, apply_tags=apply_tags)
         movie_list = []
-        valid_ids, invalid_ids = self._validate_tmdb_ids(tmdb_ids)
+        valid_ids, invalid_ids = self._validate_ids(ids)
         if len(valid_ids) > 0:
             json["movieIds"] = valid_ids
             movie_list = [Movie(self, data=m) for m in self._put_movie_editor(json)]
         return movie_list, invalid_ids
 
-    def delete_multiple_movies(self, tmdb_ids: List[Union[int, Movie]],
+    def delete_multiple_movies(self, ids: List[Union[int, str, Movie]],
                                addImportExclusion: bool = False,
                                deleteFiles: bool = False
                                ) -> List[int]:
         """ Deletes multiple Movies in Radarr by their TMDb IDs.
 
             Parameters:
-                tmdb_ids (List[Union[int, Movie]]): List of TMDb IDs or Movie objects you want to delete.
+                ids (List[Union[int, str, Movie]]): List of TMDb IDs, IMDb IDs, or Movie objects you want to delete.
                 addImportExclusion (bool): Add Import Exclusion for these TMDb IDs.
                 deleteFiles (bool): Delete Files for these TMDb IDs.
 
             Returns:
                 List[int]: List of TMDb IDs that could not be found in Radarr.
         """
-        valid_ids, invalid_ids = self._validate_tmdb_ids(tmdb_ids)
+        valid_ids, invalid_ids = self._validate_ids(ids)
         if len(valid_ids) > 0:
             json = {
                 "movieIds": valid_ids,

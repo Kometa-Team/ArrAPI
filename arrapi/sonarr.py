@@ -205,7 +205,8 @@ class SonarrAPI(BaseAPI):
                             search: bool = True,
                             unmet_search: bool = True,
                             series_type: str = "standard",
-                            tags: Optional[List[Union[str, int, Tag]]] = None
+                            tags: Optional[List[Union[str, int, Tag]]] = None,
+                            per_request: int = None
                             ) -> Tuple[List[Series], List[Series], List[int]]:
         """ Adds multiple Series to Sonarr in a single call by their TVDb IDs.
 
@@ -220,6 +221,7 @@ class SonarrAPI(BaseAPI):
                 unmet_search (bool): Start search for cutoff unmet episodes of the Series after adding.
                 series_type (str): Series Type for the Series. Valid options are ``standard``, ``daily``, or ``anime``.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added to the Series.
+                per_request (int): Number of Series to add per request.
 
             Returns:
                 Tuple[List[:class:`~arrapi.objs.Series`], List[:class:`~arrapi.objs.Series`], List[int]]: List of Series that were able to be added, List of Series already in Sonarr, List of TVDb IDs of Series that could not be found.
@@ -231,8 +233,9 @@ class SonarrAPI(BaseAPI):
                                              season_folder=season_folder, search=search, unmet_search=unmet_search,
                                              series_type=series_type, tags=tags)
         json = []
-        not_found_ids = []
+        series = []
         existing_series = []
+        not_found_ids = []
         for tvdb_id in tvdb_ids:
             try:
                 series = tvdb_id if isinstance(tvdb_id, Series) else self.get_series(tvdb_id=tvdb_id)
@@ -242,7 +245,10 @@ class SonarrAPI(BaseAPI):
                     existing_series.append(series)
             except NotFound:
                 not_found_ids.append(tvdb_id)
-        series = [Series(self, data=s) for s in self._post_series_import(json)] if len(json) > 0 else []
+        if per_request is None:
+            per_request = len(json)
+        for i in range(0, len(json), per_request):
+            series.extend([Series(self, data=s) for s in self._post_series_import(json[i:i+per_request])])
         return series, existing_series, not_found_ids
 
     def edit_multiple_series(self, tvdb_ids: List[Union[Series, int]],
@@ -255,7 +261,8 @@ class SonarrAPI(BaseAPI):
                              season_folder: Optional[bool] = None,
                              series_type: Optional[str] = None,
                              tags: Optional[List[Union[str, int, Tag]]] = None,
-                             apply_tags: str = "add"
+                             apply_tags: str = "add",
+                             per_request: int = None
                              ) -> Tuple[List[Series], List[int]]:
         """ Edit multiple Series in Sonarr by their TVDb IDs.
 
@@ -271,6 +278,7 @@ class SonarrAPI(BaseAPI):
                 series_type (Optional[str]): Series Type to change the Series to. Valid options are standard, daily, or anime.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added, replaced, or removed from the Series.
                 apply_tags (str): How you want to edit the Tags. Valid options are add, replace, or remove.
+                per_request (int): Number of Series to edit per request.
 
             Returns:
                 Tuple[List[:class:`~arrapi.objs.Series`], List[int]]: List of TVDb that were able to be edited, List of TVDb IDs that could not be found in Sonarr.
@@ -285,15 +293,21 @@ class SonarrAPI(BaseAPI):
         series_list = []
         valid_ids, invalid_ids = self._validate_tvdb_ids(tvdb_ids)
         if len(valid_ids) > 0:
+            if per_request is None:
+                per_request = len(valid_ids)
             if "monitor" in json:
-                self._edit_series_monitoring(valid_ids, json.pop("monitor"))
-            json["seriesIds"] = valid_ids
-            series_list = [Series(self, data=s) for s in self._put_series_editor(json)]
+                json_monitor = json.pop("monitor")
+                for i in range(0, len(valid_ids), per_request):
+                    self._edit_series_monitoring(valid_ids[i:i+per_request], json_monitor)
+            for i in range(0, len(valid_ids), per_request):
+                json["seriesIds"] = valid_ids[i:i+per_request]
+                series_list.extend([Series(self, data=s) for s in self._put_series_editor(json)])
         return series_list, invalid_ids
 
     def delete_multiple_series(self, tvdb_ids: List[Union[int, Series]],
                                addImportExclusion: bool = False,
-                               deleteFiles: bool = False
+                               deleteFiles: bool = False,
+                               per_request: int = None
                                ) -> List[int]:
         """ Deletes multiple Series in Sonarr by their TVDb IDs.
 
@@ -301,6 +315,7 @@ class SonarrAPI(BaseAPI):
                 tvdb_ids (List[Union[int, Series]]): List of TVDb IDs or Series objects you want to delete.
                 addImportExclusion (bool): Add Import Exclusion for these TVDb IDs.
                 deleteFiles (bool): Delete Files for these TVDb IDs.
+                per_request (int): Number of Series to delete per request.
 
             Returns:
                 List[int]: List of TVDb IDs that could not be found in Sonarr.
@@ -308,11 +323,14 @@ class SonarrAPI(BaseAPI):
         valid_ids, invalid_ids = self._validate_tvdb_ids(tvdb_ids)
         if len(valid_ids) > 0:
             json = {
-                "seriesIds": valid_ids,
                 "deleteFiles": deleteFiles,
                 "addImportExclusion": addImportExclusion
             }
-            self._delete_series_editor(json)
+            if per_request is None:
+                per_request = len(valid_ids)
+            for i in range(0, len(valid_ids), per_request):
+                json["seriesIds"] = valid_ids[i:i+per_request]
+                self._delete_series_editor(json)
         return invalid_ids
 
     def _get_languageProfile(self):

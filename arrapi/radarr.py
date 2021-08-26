@@ -177,7 +177,8 @@ class RadarrAPI(BaseAPI):
                             monitor: bool = True,
                             search: bool = True,
                             minimum_availability: str = "announced",
-                            tags: Optional[List[Union[str, int, Tag]]] = None
+                            tags: Optional[List[Union[str, int, Tag]]] = None,
+                            per_request: int = None
                             ) -> Tuple[List[Movie], List[Movie], List[int]]:
         """ Adds multiple Movies to Radarr in a single call by their TMDb IDs.
 
@@ -189,6 +190,7 @@ class RadarrAPI(BaseAPI):
                 search (bool): Search for the Movies after adding.
                 minimum_availability (str): Minimum Availability for the Movies. Valid options are announced, inCinemas, released, or preDB.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added to the Movies.
+                per_request (int): Number of Movies to add per request.
 
             Returns:
                 Tuple[List[:class:`~arrapi.objs.Movie`], List[:class:`~arrapi.objs.Movie`], List[int]]: List of Movies that were able to be added, List of Movies already in Radarr, List of TMDb IDs of Movies that could not be found.
@@ -199,8 +201,9 @@ class RadarrAPI(BaseAPI):
         options = self._validate_add_options(root_folder, quality_profile, monitor=monitor, search=search,
                                              minimum_availability=minimum_availability, tags=tags)
         json = []
-        not_found_ids = []
+        movies = []
         existing_movies = []
+        not_found_ids = []
         for item in ids:
             try:
                 if isinstance(item, Movie):
@@ -215,7 +218,10 @@ class RadarrAPI(BaseAPI):
                     existing_movies.append(movie)
             except NotFound:
                 not_found_ids.append(item)
-        movies = [Movie(self, data=m) for m in self._post_movie_import(json)] if len(json) > 0 else []
+        if per_request is None:
+            per_request = len(json)
+        for i in range(0, len(json), per_request):
+            movies.extend([Movie(self, data=m) for m in self._post_movie_import(json[i:i+per_request])])
         return movies, existing_movies, not_found_ids
 
     def edit_multiple_movies(self, ids: List[Union[int, str, Movie]],
@@ -225,7 +231,8 @@ class RadarrAPI(BaseAPI):
                              monitored: Optional[bool] = None,
                              minimum_availability: Optional[str] = None,
                              tags: Optional[List[Union[str, int, Tag]]] = None,
-                             apply_tags: str = "add"
+                             apply_tags: str = "add",
+                             per_request: int = None
                              ) -> Tuple[List[Movie], List[int]]:
         """ Edit multiple Movies in Radarr by their TMDb IDs.
 
@@ -238,6 +245,7 @@ class RadarrAPI(BaseAPI):
                 minimum_availability (Optional[str]): Minimum Availability to change the Movie to. Valid options are announced, inCinemas, released, or preDB.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added, replaced, or removed from the Movie.
                 apply_tags (str): How you want to edit the Tags. Valid options are add, replace, or remove.
+                per_request (int): Number of Movies to edit per request.
 
             Returns:
                 Tuple[List[:class:`~arrapi.objs.Movie`], List[int]]: List of Movies that were able to be edited, List of TMDb IDs that could not be found in Radarr.
@@ -251,13 +259,17 @@ class RadarrAPI(BaseAPI):
         movie_list = []
         valid_ids, invalid_ids = self._validate_ids(ids)
         if len(valid_ids) > 0:
-            json["movieIds"] = valid_ids
-            movie_list = [Movie(self, data=m) for m in self._put_movie_editor(json)]
+            if per_request is None:
+                per_request = len(valid_ids)
+            for i in range(0, len(valid_ids), per_request):
+                json["movieIds"] = valid_ids[i:i+per_request]
+                movie_list = [Movie(self, data=m) for m in self._put_movie_editor(json)]
         return movie_list, invalid_ids
 
     def delete_multiple_movies(self, ids: List[Union[int, str, Movie]],
                                addImportExclusion: bool = False,
-                               deleteFiles: bool = False
+                               deleteFiles: bool = False,
+                               per_request: int = None
                                ) -> List[int]:
         """ Deletes multiple Movies in Radarr by their TMDb IDs.
 
@@ -265,6 +277,7 @@ class RadarrAPI(BaseAPI):
                 ids (List[Union[int, str, Movie]]): List of TMDb IDs, IMDb IDs, or Movie objects you want to delete.
                 addImportExclusion (bool): Add Import Exclusion for these TMDb IDs.
                 deleteFiles (bool): Delete Files for these TMDb IDs.
+                per_request (int): Number of Movies to delete per request.
 
             Returns:
                 List[int]: List of TMDb IDs that could not be found in Radarr.
@@ -272,9 +285,12 @@ class RadarrAPI(BaseAPI):
         valid_ids, invalid_ids = self._validate_ids(ids)
         if len(valid_ids) > 0:
             json = {
-                "movieIds": valid_ids,
                 "deleteFiles": deleteFiles,
                 "addImportExclusion": addImportExclusion
             }
-            self._delete_movie_editor(json)
+            if per_request is None:
+                per_request = len(valid_ids)
+            for i in range(0, len(valid_ids), per_request):
+                json["movieIds"] = valid_ids[i:i+per_request]
+                self._delete_movie_editor(json)
         return invalid_ids

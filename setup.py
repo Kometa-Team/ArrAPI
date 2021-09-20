@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import os, re, sys
+import os, sys
 from shutil import rmtree
 
 from setuptools import setup, Command
 
-with open("arrapi/__init__.py") as handle:
+with open("VERSION") as handle:
     for line in handle.readlines():
-        if line.startswith("__version__"):
-            version = re.findall('"([0-9\.]+?)"', line)[0]
+        line = line.strip()
+        if len(line) > 0:
+            version = line
             break
 
 with open("README.rst", "r") as f:
@@ -63,6 +64,12 @@ setup(name="arrapi",
       install_requires=[
           "requests"
       ],
+      project_urls={
+          "Documentation": "https://arrapi.readthedocs.io/en/latest/",
+          "Funding": "https://github.com/sponsors/meisnate12",
+          "Source": "https://github.com/meisnate12/ArrAPI",
+          "Issues": "https://github.com/meisnate12/ArrAPI/issues",
+      },
       classifiers=[
           "Development Status :: 5 - Production/Stable",
           "Intended Audience :: Developers",

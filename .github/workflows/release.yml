@@ -1,0 +1,23 @@
+name: release
+
+on:
+  create:
+    tags:
+      - v*
+
+jobs:
+  tagged-release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release for new Tag
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          title: ArrAPI ${{ github.event.ref }}
+          repo_token: ${{ secrets.PAT }}
+          prerelease: false
+      - name: Publish a Python distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}

@@ -12,8 +12,7 @@ jobs:
         with:
           token: ${{ secrets.PAT }}
           fetch-depth: 2
-      - uses: salsify/action-detect-and-tag-new-version@v2
+      - uses: salsify/action-detect-and-tag-new-version@v1.0.3
         with:
-          token: ${{ secrets.PAT }}
           version-command: |
             cat VERSION

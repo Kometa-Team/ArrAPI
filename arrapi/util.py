@@ -4,7 +4,8 @@ from typing import Any, List, Optional
 from arrapi.exceptions import Invalid
 
 
-def parse(data: Any, attribute: Optional[str] = None, value_type: str = "str", date_format: str = "%Y-%m-%dT%H:%M:%S", default_is_none: bool = False):
+def parse(data: Any, attribute: Optional[str] = None, value_type: str = "str",
+          date_format: str = "%Y-%m-%dT%H:%M:%S", default_is_none: bool = False):
     """ Validate the value given from the options given.
 
         Parameters:
@@ -51,6 +52,7 @@ def parse(data: Any, attribute: Optional[str] = None, value_type: str = "str", d
         return datetime.strptime(value[:-1].split(".")[0], date_format)
     else:
         return str(value)
+
 
 def validate_options(title: str, value: str, options: List[str]):
     """ Validate the value given from the options given.

@@ -107,8 +107,7 @@ class SonarrAPI(BaseAPI):
                                series_type=None, tags=None, apply_tags="add"):
         """ Validate Edit Series options. """
         variables = [root_folder, path, quality_profile, language_profile, monitor,
-                     monitored, season_folder, series_type, tags
-        ]
+                     monitored, season_folder, series_type, tags]
         if all(v is None for v in variables):
             raise ValueError("Expected either root_folder, path, quality_profile, language_profile, "
                              "monitor, monitored, season_folder, series_type, or tags args")
@@ -238,11 +237,11 @@ class SonarrAPI(BaseAPI):
         not_found_ids = []
         for tvdb_id in tvdb_ids:
             try:
-                series = tvdb_id if isinstance(tvdb_id, Series) else self.get_series(tvdb_id=tvdb_id)
+                show = tvdb_id if isinstance(tvdb_id, Series) else self.get_series(tvdb_id=tvdb_id)
                 try:
-                    json.append(series._get_add_data(options))
+                    json.append(show._get_add_data(options))
                 except Exists:
-                    existing_series.append(series)
+                    existing_series.append(show)
             except NotFound:
                 not_found_ids.append(tvdb_id)
         if per_request is None:

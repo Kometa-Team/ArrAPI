@@ -1,5 +1,5 @@
 from arrapi import util
-from typing import Optional, Union, List, Tuple
+from typing import Optional, Union, List
 from .exceptions import Exists, Invalid, NotFound
 
 

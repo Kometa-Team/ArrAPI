@@ -10,6 +10,7 @@ from .objs import SystemStatus, QualityProfile, MetadataProfile, RootFolder, Tag
 
 logger = logging.getLogger(__name__)
 
+
 class BaseAPI(ABC):
     """ Base class for :class:`~arrapi.sonarr.SonarrAPI`, :class:`~arrapi.radarr.RadarrAPI`,
     :class:`~arrapi.lidarr.LidarrAPI`, and :class:`~arrapi.readarr.ReadarrAPI`
@@ -265,6 +266,7 @@ class BaseAPI(ABC):
                 :class:`~arrapi.objs.SystemStatus`: System Status Information.
         """
         return SystemStatus(self)
+
 
 class BaseV1API(BaseAPI):
     """ Base class for :class:`~arrapi.lidarr.LidarrAPI` and :class:`~arrapi.readarr.ReadarrAPI`

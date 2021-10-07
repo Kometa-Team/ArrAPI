@@ -244,10 +244,11 @@ class SonarrAPI(BaseAPI):
                     existing_series.append(show)
             except NotFound:
                 not_found_ids.append(tvdb_id)
-        if per_request is None:
-            per_request = len(json)
-        for i in range(0, len(json), per_request):
-            series.extend([Series(self, data=s) for s in self._post_series_import(json[i:i+per_request])])
+        if len(json) > 0:
+            if per_request is None:
+                per_request = len(json)
+            for i in range(0, len(json), per_request):
+                series.extend([Series(self, data=s) for s in self._post_series_import(json[i:i+per_request])])
         return series, existing_series, not_found_ids
 
     def edit_multiple_series(self, tvdb_ids: List[Union[Series, int]],

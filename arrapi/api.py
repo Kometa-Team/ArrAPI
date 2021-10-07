@@ -18,7 +18,7 @@ class BaseAPI(ABC):
 
     @abstractmethod
     def __init__(self, url, apikey, v1=False, session=None):
-        self.url = url
+        self.url = url.rstrip("/")
         self.apikey = apikey
         self.session = Session() if session is None else session
         self.v1 = v1

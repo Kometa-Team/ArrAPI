@@ -218,10 +218,11 @@ class RadarrAPI(BaseAPI):
                     existing_movies.append(movie)
             except NotFound:
                 not_found_ids.append(item)
-        if per_request is None:
-            per_request = len(json)
-        for i in range(0, len(json), per_request):
-            movies.extend([Movie(self, data=m) for m in self._post_movie_import(json[i:i+per_request])])
+        if len(json) > 0:
+            if per_request is None:
+                per_request = len(json)
+            for i in range(0, len(json), per_request):
+                movies.extend([Movie(self, data=m) for m in self._post_movie_import(json[i:i+per_request])])
         return movies, existing_movies, not_found_ids
 
     def edit_multiple_movies(self, ids: List[Union[int, str, Movie]],

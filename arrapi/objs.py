@@ -459,7 +459,7 @@ class Movie(BaseArr):
         valid_move_files = options["path"] if "path" in options else False
         for key, value in options.items():
             if key == "tags":
-                tag_type = options["apply_tags"]
+                tag_type = options["applyTags"]
                 if tag_type == "add":
                     self._data[key].extend([t for t in value if t not in self._data["tags"]])
                 elif tag_type == "remove":
@@ -705,7 +705,7 @@ class Series(BaseArr):
         valid_move_files = options["path"] if "path" in options else False
         for key, value in options.items():
             if key == "tags":
-                tag_type = options["apply_tags"]
+                tag_type = options["applyTags"]
                 if tag_type == "add":
                     self._data[key].extend([t for t in value if t not in self._data["tags"]])
                 elif tag_type == "remove":

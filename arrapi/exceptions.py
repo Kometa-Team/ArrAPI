@@ -8,6 +8,11 @@ class ConnectionFailure(ArrException):
     pass
 
 
+class Excluded(ArrException):
+    """ Item is excluded from being added to the Arr instance. """
+    pass
+
+
 class Exists(ArrException):
     """ Item already exists in the Arr instance. """
     pass

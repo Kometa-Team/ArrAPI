@@ -1,5 +1,5 @@
 SonarrAPI
 ----------------------------------------
-.. automodule:: arrapi.sonarr
+.. automodule:: arrapi.apis.sonarr
     :members:
     :inherited-members:

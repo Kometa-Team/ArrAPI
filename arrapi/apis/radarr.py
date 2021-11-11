@@ -1,9 +1,9 @@
-from arrapi import util
 from requests import Session
 from typing import Optional, Union, List, Tuple
-from .api import BaseAPI
-from .exceptions import NotFound, Invalid, Exists
-from .objs import Movie, RootFolder, QualityProfile, Tag
+from arrapi import RootFolder, QualityProfile, Movie, Tag, NotFound, Invalid, Exists
+from .base import BaseAPI
+from ..objs.simple import RadarrExclusion
+from ..raws.radarr import RadarrRawAPI
 
 
 class RadarrAPI(BaseAPI):
@@ -16,58 +16,9 @@ class RadarrAPI(BaseAPI):
      """
 
     def __init__(self, url: str, apikey: str, session: Optional[Session] = None) -> None:
-        super().__init__(url, apikey, session=session)
+        super().__init__(RadarrRawAPI(url, apikey, session=session))
+        self.exclusions = []
         self.minimum_availability_options = ["announced", "inCinemas", "released", "preDB"]
-
-    def _get_movie(self, tmdb_id=None):
-        """ GET /movie """
-        if tmdb_id is not None:
-            return self._get("movie", **{"tmdbId": tmdb_id})
-        else:
-            return self._get("movie")
-
-    def _get_movie_id(self, movie_id):
-        """ GET /movie/{id} """
-        return self._get(f"movie/{movie_id}")
-
-    def _post_movie(self, json):
-        """ POST /movie """
-        return self._post("movie", json=json)
-
-    def _post_movie_import(self, json):
-        """ POST /movie/import """
-        return self._post("movie/import", json=json)
-
-    def _put_movie(self, json, moveFiles=False):
-        """ PUT /movie """
-        params = {"moveFiles": "true"} if moveFiles else {}
-        return self._put("movie", json=json, **params)
-
-    def _put_movie_id(self, movie_id, json, moveFiles=False):
-        """ PUT /movie/{id} """
-        params = {"moveFiles": "true"} if moveFiles else {}
-        return self._put(f"movie/{movie_id}", json=json, **params)
-
-    def _put_movie_editor(self, json):
-        """ PUT /movie/editor """
-        return self._put("movie/editor", json=json)
-
-    def _delete_movie_id(self, movie_id, addImportExclusion=False, deleteFiles=False):
-        """ DELETE /movie/{id} """
-        params = {}
-        if addImportExclusion:
-            params["addImportExclusion"] = "true"
-        if deleteFiles:
-            params["deleteFiles"] = "true"
-        self._delete(f"movie/{movie_id}", **params)
-
-    def _delete_movie_editor(self, json):
-        """ DELETE /movie/editor """
-        return self._delete("movie/editor", json=json)
-
-    def _get_movie_lookup(self, term):
-        """ GET /movie/lookup """
-        return self._get("movie/lookup", **{"term": term})
 
     def _validate_add_options(self, root_folder, quality_profile, monitor=True, search=True,
                               minimum_availability="announced", tags=None):
@@ -95,7 +46,7 @@ class RadarrAPI(BaseAPI):
         if path is not None:
             options["path"] = path
         if quality_profile is not None:
-            options["qualityProfileId" if self.v3 else "profileId"] = self._validate_quality_profile(quality_profile)
+            options["qualityProfileId" if self._raw.v3 else "profileId"] = self._validate_quality_profile(quality_profile)
         if monitored is not None:
             options["monitored"] = True if monitored else False
         if minimum_availability is not None:
@@ -110,31 +61,31 @@ class RadarrAPI(BaseAPI):
 
     def _validate_minimum_availability(self, minimum_availability):
         """ Validate Minimum Availability options. """
-        return util.validate_options("Minimum Availability", minimum_availability, self.minimum_availability_options)
+        return self._validate_options("Minimum Availability", minimum_availability, self.minimum_availability_options)
 
     def _validate_ids(self, ids):
         """ Validate IDs. """
         valid_ids = []
         invalid_ids = []
-        tmdb_radarr_ids = {}
-        imdb_radarr_ids = {}
+        radarr_ids = {}
         for m in self.all_movies():
-            tmdb_radarr_ids[m.tmdbId] = m
-            tmdb_radarr_ids[str(m.tmdbId)] = m
-            imdb_radarr_ids[m.imdbId] = m
+            radarr_ids[m.tmdbId] = m
+            radarr_ids[str(m.tmdbId)] = m
+            radarr_ids[m.imdbId] = m
         for _id in ids:
             if isinstance(_id, Movie):
                 valid_ids.append(_id.id)
-            elif _id and _id in imdb_radarr_ids:
-                valid_ids.append(imdb_radarr_ids[_id].id)
-            elif _id in tmdb_radarr_ids:
-                valid_ids.append(tmdb_radarr_ids[_id].id)
+            elif _id in radarr_ids:
+                valid_ids.append(radarr_ids[_id].id)
             else:
                 invalid_ids.append(_id)
         return valid_ids, invalid_ids
 
+    def respect_list_exclusions_when_adding(self):
+        self.exclusions = [RadarrExclusion(self, ex).tmdbId for ex in self._raw.get_exclusions()]
+
     def get_movie(self, movie_id: Optional[int] = None, tmdb_id: Optional[int] = None, imdb_id: Optional[str] = None) -> Movie:
-        """ Gets a :class:`~arrapi.objs.Movie` by one of the IDs.
+        """ Gets a :class:`~arrapi.objs.reload.Movie` by one of the IDs.
 
             Parameters:
                 movie_id (Optional[int]): Search by Radarr Movie ID.
@@ -142,7 +93,7 @@ class RadarrAPI(BaseAPI):
                 imdb_id (Optional[int]): Search by IMDb ID.
 
             Returns:
-                :class:`~arrapi.objs.Movie`: Movie for the ID given.
+                :class:`~arrapi.objs.reload.Movie`: Movie for the ID given.
 
             Raises:
                 :class:`ValueError`: When no ID is given.
@@ -153,23 +104,23 @@ class RadarrAPI(BaseAPI):
         return Movie(self, movie_id=movie_id, tmdb_id=tmdb_id, imdb_id=imdb_id)
 
     def all_movies(self) -> List[Movie]:
-        """ Gets all :class:`~arrapi.objs.Movie` in Radarr.
+        """ Gets all :class:`~arrapi.objs.reload.Movie` in Radarr.
 
             Returns:
-                List[:class:`~arrapi.objs.Movie`]: List of Movies in Radarr.
+                List[:class:`~arrapi.objs.reload.Movie`]: List of Movies in Radarr.
         """
-        return [Movie(self, data=d) for d in self._get_movie()]
+        return [Movie(self, data=d) for d in self._raw.get_movie()]
 
     def search_movies(self, term: str) -> List[Movie]:
-        """ Gets a list of :class:`~arrapi.objs.Movie` by a search term.
+        """ Gets a list of :class:`~arrapi.objs.reload.Movie` by a search term.
 
             Parameters:
                 term (str): Term to Search for.
 
             Returns:
-                List[:class:`~arrapi.objs.Movie`]: List of Movie's found.
+                List[:class:`~arrapi.objs.reload.Movie`]: List of Movie's found.
         """
-        return [Movie(self, data=d) for d in self._get_movie_lookup(term)]
+        return [Movie(self, data=d) for d in self._raw.get_movie_lookup(term)]
 
     def add_multiple_movies(self, ids: List[Union[int, str, Movie]],
                             root_folder: Union[str, int, RootFolder],
@@ -193,7 +144,7 @@ class RadarrAPI(BaseAPI):
                 per_request (int): Number of Movies to add per request.
 
             Returns:
-                Tuple[List[:class:`~arrapi.objs.Movie`], List[:class:`~arrapi.objs.Movie`], List[int]]: List of Movies that were able to be added, List of Movies already in Radarr, List of TMDb IDs of Movies that could not be found.
+                Tuple[List[:class:`~arrapi.objs.reload.Movie`], List[:class:`~arrapi.objs.reload.Movie`], List[int]]: List of Movies that were able to be added, List of Movies already in Radarr, List of TMDb IDs of Movies that could not be found.
 
             Raises:
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
@@ -211,7 +162,11 @@ class RadarrAPI(BaseAPI):
                 elif str(item).startswith("tt"):
                     movie = self.get_movie(imdb_id=item)
                 else:
+                    if self.exclusions and int(item) in self.exclusions:
+                        continue
                     movie = self.get_movie(tmdb_id=item)
+                if self.exclusions and movie.tmdbId in self.exclusions:
+                    continue
                 try:
                     json.append(movie._get_add_data(options))
                 except Exists:
@@ -222,7 +177,7 @@ class RadarrAPI(BaseAPI):
             if per_request is None:
                 per_request = len(json)
             for i in range(0, len(json), per_request):
-                movies.extend([Movie(self, data=m) for m in self._post_movie_import(json[i:i+per_request])])
+                movies.extend([Movie(self, data=m) for m in self._raw.post_movie_import(json[i:i+per_request])])
         return movies, existing_movies, not_found_ids
 
     def edit_multiple_movies(self, ids: List[Union[int, str, Movie]],
@@ -249,7 +204,7 @@ class RadarrAPI(BaseAPI):
                 per_request (int): Number of Movies to edit per request.
 
             Returns:
-                Tuple[List[:class:`~arrapi.objs.Movie`], List[int]]: List of Movies that were able to be edited, List of TMDb IDs that could not be found in Radarr.
+                Tuple[List[:class:`~arrapi.objs.reload.Movie`], List[int]]: List of Movies that were able to be edited, List of TMDb IDs that could not be found in Radarr.
 
             Raises:
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
@@ -264,7 +219,7 @@ class RadarrAPI(BaseAPI):
                 per_request = len(valid_ids)
             for i in range(0, len(valid_ids), per_request):
                 json["movieIds"] = valid_ids[i:i+per_request]
-                movie_list = [Movie(self, data=m) for m in self._put_movie_editor(json)]
+                movie_list = [Movie(self, data=m) for m in self._raw.put_movie_editor(json)]
         return movie_list, invalid_ids
 
     def delete_multiple_movies(self, ids: List[Union[int, str, Movie]],
@@ -293,5 +248,5 @@ class RadarrAPI(BaseAPI):
                 per_request = len(valid_ids)
             for i in range(0, len(valid_ids), per_request):
                 json["movieIds"] = valid_ids[i:i+per_request]
-                self._delete_movie_editor(json)
+                self._raw.delete_movie_editor(json)
         return invalid_ids

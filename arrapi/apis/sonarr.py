@@ -1,9 +1,9 @@
-from arrapi import util
 from requests import Session
 from typing import Optional, Union, List, Tuple
-from .api import BaseAPI
-from .exceptions import NotFound, Invalid, Exists
-from .objs import Series, LanguageProfile, RootFolder, QualityProfile, Tag
+from arrapi import LanguageProfile, RootFolder, QualityProfile, Series, Tag, NotFound, Invalid, Exists
+from .base import BaseAPI
+from ..objs.simple import SonarrExclusion
+from ..raws.sonarr import SonarrRawAPI
 
 
 class SonarrAPI(BaseAPI):
@@ -16,72 +16,10 @@ class SonarrAPI(BaseAPI):
      """
 
     def __init__(self, url: str, apikey: str, session: Optional[Session] = None) -> None:
-        super().__init__(url, apikey, session=session)
+        super().__init__(SonarrRawAPI(url, apikey, session=session))
+        self.exclusions = []
         self.monitor_options = ["all", "future", "missing", "existing", "pilot", "firstSeason", "latestSeason", "none"]
         self.series_type_options = ["standard", "daily", "anime"]
-
-    def _get_series(self, tvdb_id=None):
-        """ GET /series """
-        if tvdb_id is not None:
-            return self._get("series", **{"tvdbId": tvdb_id})
-        else:
-            return self._get("series")
-
-    def _get_series_id(self, series_id):
-        """ GET /series/{id} """
-        return self._get(f"series/{series_id}")
-
-    def _post_series(self, json):
-        """ POST /series """
-        return self._post("series", json=json)
-
-    def _post_series_import(self, json):
-        """ POST /series/import """
-        return self._post("series/import", json=json)
-
-    def _put_series(self, json, moveFiles=False):
-        """ PUT /series """
-        params = {"moveFiles": "true"} if moveFiles else {}
-        return self._put("series", json=json, **params)
-
-    def _put_series_id(self, series_id, json, moveFiles=False):
-        """ PUT /series/{id} """
-        params = {"moveFiles": "true"} if moveFiles else {}
-        return self._put(f"series/{series_id}", json=json, **params)
-
-    def _put_series_editor(self, json):
-        """ PUT /series/editor """
-        return self._put("series/editor", json=json)
-
-    def _delete_series_id(self, series_id, addImportExclusion=False, deleteFiles=False):
-        """ DELETE /series/{id} """
-        params = {}
-        if addImportExclusion:
-            params["addImportExclusion"] = "true"
-        if deleteFiles:
-            params["deleteFiles"] = "true"
-        self._delete(f"series/{series_id}", **params)
-
-    def _delete_series_editor(self, json):
-        """ DELETE /series/editor """
-        return self._delete("series/editor", json=json)
-
-    def _get_series_lookup(self, term):
-        """ GET /series/lookup """
-        return self._get("series/lookup", **{"term": term})
-
-    def _post_seasonPass(self, json):
-        """ POST /seasonPass """
-        return self._post("seasonPass", json=json)
-
-    def _edit_series_monitoring(self, series_ids, monitor):
-        """ Edit multiple Series monitoring """
-        monitored = monitor != "none"
-        json = {
-            "monitoringOptions": {"monitor": monitor},
-            "series": [{"id": s, "monitored": monitored} for s in series_ids]
-        }
-        return self._post_seasonPass(json)
 
     def _validate_add_options(self, root_folder, quality_profile, language_profile, monitor="all",
                               season_folder=True, search=True, unmet_search=False, series_type="standard",
@@ -89,7 +27,7 @@ class SonarrAPI(BaseAPI):
         """ Validate Add Series options. """
         options = {
             "root_folder": self._validate_root_folder(root_folder),
-            "quality_profile" if self.v3 else "profileId": self._validate_quality_profile(quality_profile),
+            "quality_profile" if self._raw.v3 else "profileId": self._validate_quality_profile(quality_profile),
             "language_profile": self._validate_language_profile(language_profile),
             "monitor": self._validate_monitor(monitor),
             "monitored": monitor != "none",
@@ -117,7 +55,7 @@ class SonarrAPI(BaseAPI):
         if path is not None:
             options["path"] = path
         if quality_profile is not None:
-            options["qualityProfileId" if self.v3 else "profileId"] = self._validate_quality_profile(quality_profile)
+            options["qualityProfileId" if self._raw.v3 else "profileId"] = self._validate_quality_profile(quality_profile)
         if language_profile is not None:
             options["languageProfileId"] = self._validate_language_profile(language_profile)
         if monitor is not None:
@@ -138,11 +76,11 @@ class SonarrAPI(BaseAPI):
 
     def _validate_monitor(self, monitor):
         """ Validate Monitor options. """
-        return util.validate_options("Monitor", monitor, self.monitor_options)
+        return self._validate_options("Monitor", monitor, self.monitor_options)
 
     def _validate_series_type(self, series_type):
         """ Validate Series Type options. """
-        return util.validate_options("Series Type", series_type, self.series_type_options)
+        return self._validate_options("Series Type", series_type, self.series_type_options)
 
     def _validate_tvdb_ids(self, tvdb_ids):
         """ Validate TVDb IDs. """
@@ -158,15 +96,18 @@ class SonarrAPI(BaseAPI):
                 invalid_ids.append(tvdb_id)
         return valid_ids, invalid_ids
 
+    def respect_list_exclusions_when_adding(self):
+        self.exclusions = [SonarrExclusion(self, ex).tvdbId for ex in self._raw.get_importlistexclusion()]
+
     def get_series(self, series_id: Optional[int] = None, tvdb_id: Optional[int] = None) -> Series:
-        """ Gets a :class:`~arrapi.objs.Series` by one of the IDs.
+        """ Gets a :class:`~arrapi.objs.reload.Series` by one of the IDs.
 
             Parameters:
                 series_id (Optional[int]): Search by Sonarr Series ID.
                 tvdb_id (Optional[int]): Search by TVDb ID.
 
             Returns:
-                :class:`~arrapi.objs.Series`: Series for the ID given.
+                :class:`~arrapi.objs.reload.Series`: Series for the ID given.
 
             Raises:
                 :class:`ValueError`: When no ID is given.
@@ -177,23 +118,23 @@ class SonarrAPI(BaseAPI):
         return Series(self, series_id=series_id, tvdb_id=tvdb_id)
 
     def all_series(self) -> List[Series]:
-        """ Gets all :class:`~arrapi.objs.Series` in Sonarr.
+        """ Gets all :class:`~arrapi.objs.reload.Series` in Sonarr.
 
             Returns:
-                List[:class:`~arrapi.objs.Series`]: List of Series in Sonarr.
+                List[:class:`~arrapi.objs.reload.Series`]: List of Series in Sonarr.
         """
-        return [Series(self, data=d) for d in self._get_series()]
+        return [Series(self, data=d) for d in self._raw.get_series()]
 
     def search_series(self, term: str) -> List[Series]:
-        """ Gets a list of :class:`~arrapi.objs.Series` by a search term.
+        """ Gets a list of :class:`~arrapi.objs.reload.Series` by a search term.
 
             Parameters:
                 term (str): Term to Search for.
 
             Returns:
-                List[:class:`~arrapi.objs.Series`]: List of Series's found.
+                List[:class:`~arrapi.objs.reload.Series`]: List of Series's found.
         """
-        return [Series(self, data=d) for d in self._get_series_lookup(term)]
+        return [Series(self, data=d) for d in self._raw.get_series_lookup(term)]
 
     def add_multiple_series(self, tvdb_ids: List[Union[Series, int]],
                             root_folder: Union[str, int, RootFolder],
@@ -223,7 +164,7 @@ class SonarrAPI(BaseAPI):
                 per_request (int): Number of Series to add per request.
 
             Returns:
-                Tuple[List[:class:`~arrapi.objs.Series`], List[:class:`~arrapi.objs.Series`], List[int]]: List of Series that were able to be added, List of Series already in Sonarr, List of TVDb IDs of Series that could not be found.
+                Tuple[List[:class:`~arrapi.objs.reload.Series`], List[:class:`~arrapi.objs.reload.Series`], List[int]]: List of Series that were able to be added, List of Series already in Sonarr, List of TVDb IDs of Series that could not be found.
 
             Raises:
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
@@ -235,20 +176,27 @@ class SonarrAPI(BaseAPI):
         series = []
         existing_series = []
         not_found_ids = []
-        for tvdb_id in tvdb_ids:
+        for item in tvdb_ids:
             try:
-                show = tvdb_id if isinstance(tvdb_id, Series) else self.get_series(tvdb_id=tvdb_id)
+                if isinstance(item, Series):
+                    show = item
+                else:
+                    if self.exclusions and int(item) in self.exclusions:
+                        continue
+                    show = self.get_series(tvdb_id=item)
+                if self.exclusions and show.tvdbId in self.exclusions:
+                    continue
                 try:
                     json.append(show._get_add_data(options))
                 except Exists:
                     existing_series.append(show)
             except NotFound:
-                not_found_ids.append(tvdb_id)
+                not_found_ids.append(item)
         if len(json) > 0:
             if per_request is None:
                 per_request = len(json)
             for i in range(0, len(json), per_request):
-                series.extend([Series(self, data=s) for s in self._post_series_import(json[i:i+per_request])])
+                series.extend([Series(self, data=s) for s in self._raw.post_series_import(json[i:i+per_request])])
         return series, existing_series, not_found_ids
 
     def edit_multiple_series(self, tvdb_ids: List[Union[Series, int]],
@@ -281,7 +229,7 @@ class SonarrAPI(BaseAPI):
                 per_request (int): Number of Series to edit per request.
 
             Returns:
-                Tuple[List[:class:`~arrapi.objs.Series`], List[int]]: List of TVDb that were able to be edited, List of TVDb IDs that could not be found in Sonarr.
+                Tuple[List[:class:`~arrapi.objs.reload.Series`], List[int]]: List of TVDb that were able to be edited, List of TVDb IDs that could not be found in Sonarr.
 
             Raises:
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
@@ -298,10 +246,10 @@ class SonarrAPI(BaseAPI):
             if "monitor" in json:
                 json_monitor = json.pop("monitor")
                 for i in range(0, len(valid_ids), per_request):
-                    self._edit_series_monitoring(valid_ids[i:i+per_request], json_monitor)
+                    self._raw.edit_series_monitoring(valid_ids[i:i+per_request], json_monitor)
             for i in range(0, len(valid_ids), per_request):
                 json["seriesIds"] = valid_ids[i:i+per_request]
-                series_list.extend([Series(self, data=s) for s in self._put_series_editor(json)])
+                series_list.extend([Series(self, data=s) for s in self._raw.put_series_editor(json)])
         return series_list, invalid_ids
 
     def delete_multiple_series(self, tvdb_ids: List[Union[int, Series]],
@@ -330,20 +278,16 @@ class SonarrAPI(BaseAPI):
                 per_request = len(valid_ids)
             for i in range(0, len(valid_ids), per_request):
                 json["seriesIds"] = valid_ids[i:i+per_request]
-                self._delete_series_editor(json)
+                self._raw.delete_series_editor(json)
         return invalid_ids
 
-    def _get_languageProfile(self):
-        """ GET /languageProfile """
-        return self._get("languageProfile")
-
     def language_profile(self) -> List[LanguageProfile]:
-        """ Gets every :class:`~arrapi.objs.LanguageProfile` in Sonarr.
+        """ Gets every :class:`~arrapi.objs.reload.LanguageProfile` in Sonarr.
 
             Returns:
-                List[:class:`~arrapi.objs.LanguageProfile`]: List of all Language Profiles
+                List[:class:`~arrapi.objs.reload.LanguageProfile`]: List of all Language Profiles
         """
-        return [LanguageProfile(self, data) for data in self._get_languageProfile()]
+        return [LanguageProfile(self, data) for data in self._raw.get_languageProfile()]
 
     def _validate_language_profile(self, language_profile):
         """ Validate Quality Profile options. """
@@ -355,3 +299,4 @@ class SonarrAPI(BaseAPI):
                     or (profile.name == language_profile):
                 return profile.id
         raise Invalid(f"Invalid Language Profile: '{language_profile}' Options: {options}")
+

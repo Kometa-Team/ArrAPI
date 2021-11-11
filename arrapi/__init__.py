@@ -1,11 +1,12 @@
 import os, pkg_resources
 
-from .exceptions import ArrException, ConnectionFailure, Exists, Invalid, NotFound, Unauthorized
-from .objs import QualityProfile, LanguageProfile, MetadataProfile, RemotePathMapping, RootFolder, UnmappedFolder, SystemStatus, Tag, Movie, Series, Season
-from .sonarr import SonarrAPI
-from .radarr import RadarrAPI
-from .lidarr import LidarrAPI
-from .readarr import ReadarrAPI
+from .exceptions import ArrException, ConnectionFailure, Excluded, Exists, Invalid, NotFound, Unauthorized
+from .objs.simple import MetadataProfile, RemotePathMapping, RootFolder, UnmappedFolder, Season
+from .objs.reload import QualityProfile, LanguageProfile, SystemStatus, Tag, Movie, Series
+from .apis.sonarr import SonarrAPI
+from .apis.radarr import RadarrAPI
+from .apis.lidarr import LidarrAPI
+from .apis.readarr import ReadarrAPI
 
 try:
     __version__ = pkg_resources.get_distribution("arrapi").version
@@ -43,6 +44,7 @@ __all__ = [
     "Season",
     "ArrException",
     "ConnectionFailure",
+    "Excluded",
     "Exists",
     "Invalid",
     "NotFound",

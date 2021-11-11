@@ -44,7 +44,7 @@ Connecting to Sonarr
 Getting a SonarrAPI Instance
 ----------------------------------------------------------
 
-To connect to a Sonarr application you have to use the :class:`~arrapi.sonarr.SonarrAPI` object and provide it with the ``baseurl`` and ``apikey`` parameters.
+To connect to a Sonarr application you have to use the :class:`~arrapi.apis.sonarr.SonarrAPI` object and provide it with the ``baseurl`` and ``apikey`` parameters.
 
 The ``apikey`` can be found by going to ``Settings > General > Security > API Key``
 
@@ -60,28 +60,28 @@ The ``apikey`` can be found by going to ``Settings > General > Security > API Ke
 Using the SonarrAPI Instance
 ----------------------------------------------------------
 
-Once you have a :class:`~arrapi.sonarr.SonarrAPI` instance you can use it to interact with the application.
+Once you have a :class:`~arrapi.apis.sonarr.SonarrAPI` instance you can use it to interact with the application.
 
-To add, edit, or delete a singular Series you must first find the :class:`~arrapi.objs.Series` object.
+To add, edit, or delete a singular Series you must first find the :class:`~arrapi.objs.reload.Series` object.
 
 Find a Series Object
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-There are three ways to find a :class:`~arrapi.objs.Series` object.
+There are three ways to find a :class:`~arrapi.objs.reload.Series` object.
 
-You can get a :class:`~arrapi.objs.Series` object using :meth:`~arrapi.sonarr.SonarrAPI.get_series` and giving it a ``Sonarr Series ID`` or ``TVDb ID``.
+You can get a :class:`~arrapi.objs.reload.Series` object using :meth:`~arrapi.apis.sonarr.SonarrAPI.get_series` and giving it a ``Sonarr Series ID`` or ``TVDb ID``.
 
 .. code-block:: python
 
     series = sonarr.get_series(tvdb_id=121361)
 
-You can get a ``List`` of :class:`~arrapi.objs.Series` objects using :meth:`~arrapi.sonarr.SonarrAPI.search_series` and giving it a search term.
+You can get a ``List`` of :class:`~arrapi.objs.reload.Series` objects using :meth:`~arrapi.apis.sonarr.SonarrAPI.search_series` and giving it a search term.
 
 .. code-block:: python
 
     search = sonarr.search_series("Game of Thrones")
 
-You can get a ``List`` of all :class:`~arrapi.objs.Series` objects in Sonarr using :meth:`~arrapi.sonarr.SonarrAPI.all_series`.
+You can get a ``List`` of all :class:`~arrapi.objs.reload.Series` objects in Sonarr using :meth:`~arrapi.apis.sonarr.SonarrAPI.all_series`.
 
 .. code-block:: python
 
@@ -91,19 +91,19 @@ You can get a ``List`` of all :class:`~arrapi.objs.Series` objects in Sonarr usi
 Using a Series Object
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-To add a series to Sonarr use :meth:`~arrapi.objs.Series.add`.
+To add a series to Sonarr use :meth:`~arrapi.objs.reload.Series.add`.
 
 .. code-block:: python
 
     series.add("/shows/", "HD-1080p", "English")
 
-To edit a series in Sonarr use :meth:`~arrapi.objs.Series.edit`.
+To edit a series in Sonarr use :meth:`~arrapi.objs.reload.Series.edit`.
 
 .. code-block:: python
 
     series.edit(tags=["hd"])
 
-To delete a series in Sonarr use :meth:`~arrapi.objs.Series.delete`.
+To delete a series in Sonarr use :meth:`~arrapi.objs.reload.Series.delete`.
 
 .. code-block:: python
 
@@ -113,21 +113,21 @@ To delete a series in Sonarr use :meth:`~arrapi.objs.Series.delete`.
 Perform Operations on Multiple Series
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-To add multiple Series to Sonarr use :meth:`~arrapi.sonarr.SonarrAPI.add_multiple_series` with the Series' TVDb IDs.
+To add multiple Series to Sonarr use :meth:`~arrapi.apis.sonarr.SonarrAPI.add_multiple_series` with the Series' TVDb IDs.
 
 .. code-block:: python
 
     series_ids = [83268, 283468, 385376]
     added, exists, invalid = sonarr.add_multiple_series(series_ids, "/shows/", "HD-1080p", "English")
 
-To edit multiple Series in Sonarr use :meth:`~arrapi.sonarr.SonarrAPI.edit_multiple_series` with the Series' TVDb IDs.
+To edit multiple Series in Sonarr use :meth:`~arrapi.apis.sonarr.SonarrAPI.edit_multiple_series` with the Series' TVDb IDs.
 
 .. code-block:: python
 
     series_ids = [83268, 283468, 385376]
     edited, not_exist = sonarr.edit_multiple_series(series_ids, monitor=False)
 
-To delete multiple Series in Sonarr use :meth:`~arrapi.sonarr.SonarrAPI.delete_multiple_series` with the Series' TVDb IDs.
+To delete multiple Series in Sonarr use :meth:`~arrapi.apis.sonarr.SonarrAPI.delete_multiple_series` with the Series' TVDb IDs.
 
 .. code-block:: python
 
@@ -140,7 +140,7 @@ Connecting to Radarr
 Getting a RadarrAPI Instance
 ----------------------------------------------------------
 
-To connect to a Radarr application you have to use the :class:`~arrapi.radarr.RadarrAPI` object and provide it with the ``baseurl`` and ``apikey`` parameters.
+To connect to a Radarr application you have to use the :class:`~arrapi.apis.radarr.RadarrAPI` object and provide it with the ``baseurl`` and ``apikey`` parameters.
 
 The ``apikey`` can be found by going to ``Settings > General > Security > API Key``
 
@@ -156,28 +156,28 @@ The ``apikey`` can be found by going to ``Settings > General > Security > API Ke
 Using the RadarrAPI Instance
 ----------------------------------------------------------
 
-Once you have a :class:`~arrapi.radarr.RadarrAPI` instance you can use it to interact with the application.
+Once you have a :class:`~arrapi.apis.radarr.RadarrAPI` instance you can use it to interact with the application.
 
-To add, edit, or delete a singular Movie you must first find the :class:`~arrapi.objs.Movie` object.
+To add, edit, or delete a singular Movie you must first find the :class:`~arrapi.objs.reload.Movie` object.
 
 Find a Movie Object
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-There are three ways to find a :class:`~arrapi.objs.Movie` object.
+There are three ways to find a :class:`~arrapi.objs.reload.Movie` object.
 
-You can get a :class:`~arrapi.objs.Movie` object using :meth:`~arrapi.radarr.RadarrAPI.get_movie` and giving it a ``Radarr Movie ID`` or ``TVDb ID``.
+You can get a :class:`~arrapi.objs.reload.Movie` object using :meth:`~arrapi.apis.radarr.RadarrAPI.get_movie` and giving it a ``Radarr Movie ID`` or ``TVDb ID``.
 
 .. code-block:: python
 
     movie = radarr.get_movie(tmdb_id=121361)
 
-You can get a ``List`` of :class:`~arrapi.objs.Movie` objects using :meth:`~arrapi.radarr.RadarrAPI.search_movies` and giving it a search term.
+You can get a ``List`` of :class:`~arrapi.objs.reload.Movie` objects using :meth:`~arrapi.apis.radarr.RadarrAPI.search_movies` and giving it a search term.
 
 .. code-block:: python
 
     search = radarr.search_movies("Game of Thrones")
 
-You can get a ``List`` of all :class:`~arrapi.objs.Movie` objects in Radarr using :meth:`~arrapi.radarr.RadarrAPI.all_movies`.
+You can get a ``List`` of all :class:`~arrapi.objs.reload.Movie` objects in Radarr using :meth:`~arrapi.apis.radarr.RadarrAPI.all_movies`.
 
 .. code-block:: python
 
@@ -186,19 +186,19 @@ You can get a ``List`` of all :class:`~arrapi.objs.Movie` objects in Radarr usin
 Using a Movie Object
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-To add a movie to Radarr use :meth:`~arrapi.objs.Movie.add`.
+To add a movie to Radarr use :meth:`~arrapi.objs.reload.Movie.add`.
 
 .. code-block:: python
 
     movie.add("/movies/", "HD-1080p")
 
-To edit a movie in Radarr use :meth:`~arrapi.objs.Movie.edit`.
+To edit a movie in Radarr use :meth:`~arrapi.objs.reload.Movie.edit`.
 
 .. code-block:: python
 
     movie.edit(tags=["hd"])
 
-To delete a movie in Radarr use :meth:`~arrapi.objs.Movie.delete`.
+To delete a movie in Radarr use :meth:`~arrapi.objs.reload.Movie.delete`.
 
 .. code-block:: python
 
@@ -207,21 +207,21 @@ To delete a movie in Radarr use :meth:`~arrapi.objs.Movie.delete`.
 Perform Operations on Multiple Movie
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-To add multiple Movies to Radarr use :meth:`~arrapi.radarr.RadarrAPI.add_multiple_movies` with the Movie's TMDb IDs.
+To add multiple Movies to Radarr use :meth:`~arrapi.apis.radarr.RadarrAPI.add_multiple_movies` with the Movie's TMDb IDs.
 
 .. code-block:: python
 
     movie_ids = [11, 1891, 1892, 1893, 1894, 1895]
     added, exists, invalid = radarr.add_multiple_movies(movie_ids, "/movies/", "HD-1080p")
 
-To edit multiple Movies in Radarr use :meth:`~arrapi.radarr.RadarrAPI.edit_multiple_movies` with the Movie's TMDb IDs.
+To edit multiple Movies in Radarr use :meth:`~arrapi.apis.radarr.RadarrAPI.edit_multiple_movies` with the Movie's TMDb IDs.
 
 .. code-block:: python
 
     movie_ids = [11, 1891, 1892, 1893, 1894, 1895]
     edited, not_exist = radarr.edit_multiple_movies(movie_ids, monitor=False)
 
-To delete multiple Movies in Radarr use :meth:`~arrapi.radarr.RadarrAPI.delete_multiple_movies` with the Movie's TMDb IDs.
+To delete multiple Movies in Radarr use :meth:`~arrapi.apis.radarr.RadarrAPI.delete_multiple_movies` with the Movie's TMDb IDs.
 
 .. code-block:: python
 

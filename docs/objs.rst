@@ -19,6 +19,20 @@ Movie
     :members:
 
 
+RadarrExclusion
+--------------------
+
+.. autoclass:: arrapi.objs.simple.RadarrExclusion
+    :members:
+
+
+SonarrExclusion
+--------------------
+
+.. autoclass:: arrapi.objs.simple.SonarrExclusion
+    :members:
+
+
 Root Folder
 --------------------
 

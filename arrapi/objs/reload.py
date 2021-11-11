@@ -23,6 +23,7 @@ class ReloadObj(BaseObj):
         pass
 
     def reload(self):
+        """ Reloads the Object """
         self._load(None)
 
 

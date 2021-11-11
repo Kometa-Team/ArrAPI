@@ -82,6 +82,7 @@ class RadarrAPI(BaseAPI):
         return valid_ids, invalid_ids
 
     def respect_list_exclusions_when_adding(self):
+        """ Stores all List Exclusions so whenever :func:`~arrapi.objs.reload.Movie.add` or :func:`~arrapi.apis.sonarr.RadarrAPI.add_multiple_movies` is called the additions will be checked against the Exclusion List  """
         self.exclusions = [RadarrExclusion(self, ex).tmdbId for ex in self._raw.get_exclusions()]
 
     def get_movie(self, movie_id: Optional[int] = None, tmdb_id: Optional[int] = None, imdb_id: Optional[str] = None) -> Movie:

@@ -2,6 +2,10 @@
 Welcome to ArrAPI's documentation!
 ==========================================================
 
+.. image:: https://app.travis-ci.com/meisnate12/ArrAPI.svg?branch=master&style=plastic
+    :target: https://app.travis-ci.com/meisnate12/ArrAPI
+    :alt: Build Testing
+
 .. image:: https://img.shields.io/readthedocs/arrapi?style=plastic
     :target: https://arrapi.readthedocs.io/en/latest/?badge=latest
     :alt: Read the Docs

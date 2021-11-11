@@ -97,10 +97,10 @@ class SonarrAPI(BaseAPI):
         return valid_ids, invalid_ids
 
     def respect_list_exclusions_when_adding(self):
-        """ Stores all List Exclusions so when :func:`~arrapi.objs.reload.Series.add` or :func:`~arrapi.apis.sonarr.add_multiple_series` is called then it will check against the list """
+        """ Stores all List Exclusions so whenever :func:`~arrapi.objs.reload.Series.add` or :func:`~arrapi.apis.sonarr.SonarrAPI.add_multiple_series` is called the additions will be checked against the Exclusion List  """
         self.exclusions = [SonarrExclusion(self, ex).tvdbId for ex in self._raw.get_importlistexclusion()]
 
-    def get_series(self, series_id: Optional[int] = None, tvdb_id: Optional[int] = None) -> "~Series":
+    def get_series(self, series_id: Optional[int] = None, tvdb_id: Optional[int] = None) -> Series:
         """ Gets a :class:`~arrapi.objs.reload.Series` by one of the IDs.
 
             Parameters:

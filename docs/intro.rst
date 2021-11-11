@@ -2,7 +2,7 @@
 Welcome to ArrAPI's documentation!
 ==========================================================
 
-.. image:: https://app.travis-ci.com/meisnate12/ArrAPI.svg?branch=master&style=plastic
+.. image:: https://img.shields.io/travis/com/meisnate12/ArrAPI?style=plastic
     :target: https://app.travis-ci.com/meisnate12/ArrAPI
     :alt: Build Testing
 
@@ -17,6 +17,10 @@ Welcome to ArrAPI's documentation!
 .. image:: https://img.shields.io/pypi/v/ArrAPI?style=plastic
     :target: https://pypi.org/project/arrapi/
     :alt: PyPI
+
+.. image:: https://img.shields.io/pypi/dm/arrapi.svg?style=plastic
+    :target: https://pypi.org/project/arrapi/
+    :alt: Downloads
 
 .. image:: https://img.shields.io/github/commits-since/meisnate12/ArrAPI/latest?style=plastic
     :target: https://github.com/meisnate12/ArrAPI/commits/master
@@ -138,6 +142,17 @@ To delete multiple Series in Sonarr use :meth:`~arrapi.apis.sonarr.SonarrAPI.del
     series_ids = [83268, 283468, 385376]
     not_exist = sonarr.delete_multiple_series(series_ids)
 
+Respect Sonarr List Exclusions
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+To respect Sonarr's List Exclusions, before running :meth:`~arrapi.objs.reload.Series.add` or :meth:`~arrapi.apis.sonarr.SonarrAPI.add_multiple_series` you can use :meth:`~arrapi.apis.sonarr.SonarrAPI.respect_list_exclusions_when_adding` like so.
+
+.. code-block:: python
+
+    series_ids = [83268, 283468, 385376]
+    sonarr.respect_list_exclusions_when_adding()
+    added, exists, invalid = sonarr.add_multiple_series(series_ids, "/shows/", "HD-1080p", "English")
+
 Connecting to Radarr
 ==========================================================
 
@@ -179,7 +194,7 @@ You can get a ``List`` of :class:`~arrapi.objs.reload.Movie` objects using :meth
 
 .. code-block:: python
 
-    search = radarr.search_movies("Game of Thrones")
+    search = radarr.search_movies("The Lord of the Rings: The Return of the King")
 
 You can get a ``List`` of all :class:`~arrapi.objs.reload.Movie` objects in Radarr using :meth:`~arrapi.apis.radarr.RadarrAPI.all_movies`.
 
@@ -231,6 +246,17 @@ To delete multiple Movies in Radarr use :meth:`~arrapi.apis.radarr.RadarrAPI.del
 
     movie_ids = [11, 1891, 1892, 1893, 1894, 1895]
     not_exist = radarr.delete_multiple_movies(movie_ids)
+
+Respect Radarr List Exclusions
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+To respect Radarr's List Exclusions, before running :meth:`~arrapi.objs.reload.Series.add` or :meth:`~arrapi.apis.sonarr.SonarrAPI.add_multiple_series` you can use :meth:`~arrapi.apis.sonarr.SonarrAPI.respect_list_exclusions_when_adding` like so.
+
+.. code-block:: python
+
+    movie_ids = [11, 1891, 1892, 1893, 1894, 1895]
+    radarr.respect_list_exclusions_when_adding()
+    added, exists, invalid = radarr.add_multiple_movies(movie_ids, "/movies/", "HD-1080p")
 
 Usage Examples
 ==========================================================

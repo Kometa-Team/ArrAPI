@@ -22,6 +22,8 @@ class SonarrTests(unittest.TestCase):
                 has_config = True
         if not has_config:
             cls.sonarr.add_root_folder(f"{cls.root}/")
+        for series in cls.sonarr.all_series():
+            series.delete()
         for tag in cls.sonarr.all_tags():
             tag.delete()
 

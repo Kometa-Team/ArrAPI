@@ -21,6 +21,8 @@ class RadarrTests(unittest.TestCase):
                 has_config = True
         if not has_config:
             cls.radarr.add_root_folder(f"{cls.root}/")
+        for movie in cls.radarr.all_movies():
+            movie.delete()
         for tag in cls.radarr.all_tags():
             tag.delete()
 

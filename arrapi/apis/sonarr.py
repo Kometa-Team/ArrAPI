@@ -137,7 +137,7 @@ class SonarrAPI(BaseAPI):
         """
         return [Series(self, data=d) for d in self._raw.get_series_lookup(term)]
 
-    def add_multiple_series(self, tvdb_ids: List[Union[Series, int]],
+    def add_multiple_series(self, ids: List[Union[Series, int]],
                             root_folder: Union[str, int, RootFolder],
                             quality_profile: Union[str, int, QualityProfile],
                             language_profile: Union[str, int, LanguageProfile],
@@ -148,11 +148,11 @@ class SonarrAPI(BaseAPI):
                             series_type: str = "standard",
                             tags: Optional[List[Union[str, int, Tag]]] = None,
                             per_request: int = None
-                            ) -> Tuple[List[Series], List[Series], List[int]]:
+                            ) -> Tuple[List[Series], List[Series], List[Union[int, Series]]]:
         """ Adds multiple Series to Sonarr in a single call by their TVDb IDs.
 
             Parameters:
-                tvdb_ids (List[Union[int, Series]]): List of TVDB IDs or Series lookups to add.
+                ids (List[Union[int, Series]]): List of TVDB IDs or Series lookups to add.
                 root_folder (Union[str, int, RootFolder]): Root Folder for the Series.
                 quality_profile (Union[str, int, QualityProfile]): Quality Profile for the Series.
                 language_profile (Union[str, int, LanguageProfile]): Language Profile for the Series.
@@ -165,7 +165,7 @@ class SonarrAPI(BaseAPI):
                 per_request (int): Number of Series to add per request.
 
             Returns:
-                Tuple[List[:class:`~arrapi.objs.reload.Series`], List[:class:`~arrapi.objs.reload.Series`], List[int]]: List of Series that were able to be added, List of Series already in Sonarr, List of TVDb IDs of Series that could not be found.
+                Tuple[List[:class:`~arrapi.objs.reload.Series`], List[:class:`~arrapi.objs.reload.Series`], List[Union[int, Series]]]: List of Series that were able to be added, List of Series already in Sonarr, List of Series that could not be found or were excluded.
 
             Raises:
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
@@ -176,31 +176,31 @@ class SonarrAPI(BaseAPI):
         json = []
         series = []
         existing_series = []
-        not_found_ids = []
-        for item in tvdb_ids:
+        invalid_ids = []
+        for item in ids:
             try:
                 if isinstance(item, Series):
                     show = item
                 else:
                     if self.exclusions and int(item) in self.exclusions:
-                        continue
+                        raise NotFound
                     show = self.get_series(tvdb_id=item)
                 if self.exclusions and show.tvdbId in self.exclusions:
-                    continue
+                    raise NotFound
                 try:
                     json.append(show._get_add_data(options))
                 except Exists:
                     existing_series.append(show)
             except NotFound:
-                not_found_ids.append(item)
+                invalid_ids.append(item)
         if len(json) > 0:
             if per_request is None:
                 per_request = len(json)
             for i in range(0, len(json), per_request):
                 series.extend([Series(self, data=s) for s in self._raw.post_series_import(json[i:i+per_request])])
-        return series, existing_series, not_found_ids
+        return series, existing_series, invalid_ids
 
-    def edit_multiple_series(self, tvdb_ids: List[Union[Series, int]],
+    def edit_multiple_series(self, ids: List[Union[Series, int]],
                              root_folder: Optional[Union[str, int, RootFolder]] = None,
                              move_files: bool = False,
                              quality_profile: Optional[Union[str, int, QualityProfile]] = None,
@@ -212,11 +212,11 @@ class SonarrAPI(BaseAPI):
                              tags: Optional[List[Union[str, int, Tag]]] = None,
                              apply_tags: str = "add",
                              per_request: int = None
-                             ) -> Tuple[List[Series], List[int]]:
+                             ) -> Tuple[List[Series], List[Union[Series, int]]]:
         """ Edit multiple Series in Sonarr by their TVDb IDs.
 
             Parameters:
-                tvdb_ids (List[Union[int, Series]]): List of Series IDs or Series objects you want to edit.
+                ids (List[Union[int, Series]]): List of Series IDs or Series objects you want to edit.
                 root_folder (Union[str, int, RootFolder]): Root Folder to change the Series to.
                 move_files (bool): When changing the root folder do you want to move the files to the new path.
                 quality_profile (Optional[Union[str, int, QualityProfile]]): Quality Profile to change the Series to.
@@ -230,7 +230,7 @@ class SonarrAPI(BaseAPI):
                 per_request (int): Number of Series to edit per request.
 
             Returns:
-                Tuple[List[:class:`~arrapi.objs.reload.Series`], List[int]]: List of TVDb that were able to be edited, List of TVDb IDs that could not be found in Sonarr.
+                Tuple[List[:class:`~arrapi.objs.reload.Series`], List[Union[Series, int]]]: List of Series that were able to be edited, List of Series that could not be found in Sonarr.
 
             Raises:
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
@@ -240,7 +240,7 @@ class SonarrAPI(BaseAPI):
                                            monitor=monitor, monitored=monitored, season_folder=season_folder,
                                            series_type=series_type, tags=tags, apply_tags=apply_tags)
         series_list = []
-        valid_ids, invalid_ids = self._validate_tvdb_ids(tvdb_ids)
+        valid_ids, invalid_ids = self._validate_tvdb_ids(ids)
         if len(valid_ids) > 0:
             if per_request is None:
                 per_request = len(valid_ids)
@@ -253,23 +253,23 @@ class SonarrAPI(BaseAPI):
                 series_list.extend([Series(self, data=s) for s in self._raw.put_series_editor(json)])
         return series_list, invalid_ids
 
-    def delete_multiple_series(self, tvdb_ids: List[Union[int, Series]],
+    def delete_multiple_series(self, ids: List[Union[int, Series]],
                                addImportExclusion: bool = False,
                                deleteFiles: bool = False,
                                per_request: int = None
-                               ) -> List[int]:
+                               ) -> List[Union[Series, int]]:
         """ Deletes multiple Series in Sonarr by their TVDb IDs.
 
             Parameters:
-                tvdb_ids (List[Union[int, Series]]): List of TVDb IDs or Series objects you want to delete.
+                ids (List[Union[int, Series]]): List of TVDb IDs or Series objects you want to delete.
                 addImportExclusion (bool): Add Import Exclusion for these TVDb IDs.
                 deleteFiles (bool): Delete Files for these TVDb IDs.
                 per_request (int): Number of Series to delete per request.
 
             Returns:
-                List[int]: List of TVDb IDs that could not be found in Sonarr.
+                List[Union[Series, int]]: List of Series that could not be found in Sonarr.
         """
-        valid_ids, invalid_ids = self._validate_tvdb_ids(tvdb_ids)
+        valid_ids, invalid_ids = self._validate_tvdb_ids(ids)
         if len(valid_ids) > 0:
             json = {
                 "deleteFiles": deleteFiles,

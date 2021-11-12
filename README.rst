@@ -140,7 +140,7 @@ To delete multiple Series in Sonarr use |delete_multiple_series|_ with the Serie
     not_exist = sonarr.delete_multiple_series(series_ids)
 
 Respect Sonarr List Exclusions
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+----------------------------------------------------------
 
 To respect Sonarr's List Exclusions, before running |sonarr_add|_ or |add_multiple_series|_ you can use |sonarr_exclusions|_ like so.
 
@@ -245,7 +245,7 @@ To delete multiple Movies in Radarr use |delete_multiple_movies|_ with the Movie
     not_exist = radarr.delete_multiple_movies(movie_ids)
 
 Respect Radarr List Exclusions
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+----------------------------------------------------------
 
 To respect Radarr's List Exclusions, before running |radarr_add|_ or |add_multiple_movies|_ you can use |radarr_exclusions|_ like so.
 

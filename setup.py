@@ -1,13 +1,22 @@
-import arrapi
+import arrapi, os
 
 from setuptools import setup, find_packages
 
 with open("README.rst", "r") as f:
     long_descr = f.read()
 
+__version__ = None
+if os.path.exists("VERSION"):
+    with open("VERSION") as handle:
+        for line in handle.readlines():
+            line = line.strip()
+            if len(line) > 0:
+                __version__ = line
+                break
+
 setup(
     name=arrapi.__package_name__,
-    version=arrapi.__version__,
+    version=__version__,
     description=arrapi.__description__,
     long_description=long_descr,
     url=arrapi.__url__,

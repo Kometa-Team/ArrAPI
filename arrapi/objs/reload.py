@@ -332,7 +332,7 @@ class Movie(ReloadObj):
             Raises:
                 :class:`ValueError`: When theres no options given.
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
-                :class:`~arrapi.exceptions.NotFound`: When the Movie isn't found in Radarr and must be added to Radarr before editing.
+                :class:`~arrapi.exceptions.NotFound`: When the Movie hasn't been added to Radarr.
         """
         if not self.id:
             raise NotFound(f"{self.title} not found Radarr, it must be added before editing")
@@ -363,7 +363,7 @@ class Movie(ReloadObj):
                 deleteFiles (bool): Delete Files for this Movie.
 
             Raises:
-                :class:`~arrapi.exceptions.NotFound`: When the Movie isn't found in Radarr.
+                :class:`~arrapi.exceptions.NotFound`: When the Movie hasn't been added to Radarr.
         """
         if not self.id:
             raise NotFound(f"{self.title} not found Radarr, it must be added before deleting")
@@ -594,7 +594,7 @@ class Series(ReloadObj):
             Raises:
                 :class:`ValueError`: When theres no options given.
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
-                :class:`~arrapi.exceptions.NotFound`: When the Series isn't found in Sonarr and must be added to Sonarr before editing.
+                :class:`~arrapi.exceptions.NotFound`: When the Series hasn't been added to Sonarr.
         """
         if not self.id:
             raise NotFound(f"{self.title} not found in Sonarr, it must be added before editing")
@@ -628,7 +628,7 @@ class Series(ReloadObj):
                 deleteFiles (bool): Delete Files for this Series.
 
             Raises:
-                :class:`~arrapi.exceptions.NotFound`: When the Series isn't found in Sonarr.
+                :class:`~arrapi.exceptions.NotFound`: When the Series hasn't been added to Sonarr.
         """
         if not self.id:
             raise NotFound(f"{self.title} not found in Sonarr, it must be added before deleting")

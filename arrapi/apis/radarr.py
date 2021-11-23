@@ -123,7 +123,111 @@ class RadarrAPI(BaseAPI):
         """
         return [Movie(self, data=d) for d in self._raw.get_movie_lookup(term)]
 
-    def add_multiple_movies(self, ids: List[Union[int, str, Movie]],
+    def add_movie(
+            self,
+            root_folder: Union[str, int, "RootFolder"],
+            quality_profile: Union[str, int, "QualityProfile"],
+            movie_id: Optional[int] = None,
+            tmdb_id: Optional[int] = None,
+            imdb_id: Optional[str] = None,
+            monitor: bool = True,
+            search: bool = True,
+            minimum_availability: str = "announced",
+            tags: Optional[List[Union[str, int, Tag]]] = None
+            ) -> Movie:
+        """ Gets a :class:`~arrapi.objs.reload.Movie` by one of the IDs and adds it to Radarr.
+
+            Parameters:
+                root_folder (Union[str, int, RootFolder]): Root Folder for the Movie.
+                quality_profile (Union[str, int, QualityProfile]): Quality Profile for the Movie.
+                movie_id (Optional[int]): Search by Radarr Movie ID.
+                tmdb_id (Optional[int]): Search by TMDb ID.
+                imdb_id (Optional[int]): Search by IMDb ID.
+                monitor (bool): Monitor the Movie.
+                search (bool): Search for the Movie after adding.
+                minimum_availability (str): Minimum Availability for the Movie. Valid options are announced, inCinemas, released, or preDB.
+                tags (Optional[List[Union[str, int, Tag]]]): Tags to be added to the Movie.
+
+            Returns:
+                :class:`~arrapi.objs.reload.Movie`: Movie for the ID given.
+
+            Raises:
+                :class:`ValueError`: When no ID is given.
+                :class:`~arrapi.exceptions.NotFound`: When there's no movie with that ID.
+                :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
+                :class:`~arrapi.exceptions.Exists`: When the Movie already Exists in Radarr.
+        """
+        movie = self.get_movie(movie_id=movie_id, tmdb_id=tmdb_id, imdb_id=imdb_id)
+        movie.add(root_folder, quality_profile, monitor=monitor, search=search,
+                  minimum_availability=minimum_availability, tags=tags)
+        return movie
+
+    def edit_movie(
+            self,
+            movie_id: Optional[int] = None,
+            tmdb_id: Optional[int] = None,
+            imdb_id: Optional[str] = None,
+            path: Optional[str] = None,
+            move_files: bool = False,
+            quality_profile: Optional[Union[str, int, "QualityProfile"]] = None,
+            monitored: Optional[bool] = None,
+            minimum_availability: Optional[str] = None,
+            tags: Optional[List[Union[str, int, Tag]]] = None,
+            apply_tags: str = "add"
+            ) -> Movie:
+        """ Gets a :class:`~arrapi.objs.reload.Movie` by one of the IDs and edits it in Radarr.
+
+            Parameters:
+                movie_id (Optional[int]): Search by Radarr Movie ID.
+                tmdb_id (Optional[int]): Search by TMDb ID.
+                imdb_id (Optional[int]): Search by IMDb ID.
+                path (Optional[str]): Path to change the Movie to.
+                move_files (bool): When changing the path do you want to move the files to the new path.
+                quality_profile (Optional[Union[str, int, QualityProfile]]): Quality Profile to change the Movie to.
+                monitored (Optional[bool]): Monitor the Movie.
+                minimum_availability (Optional[str]): Minimum Availability to change the Movie to. Valid options are announced, inCinemas, released, or preDB.
+                tags (Optional[List[Union[str, int, Tag]]]): Tags to be added, replaced, or removed from the Movie.
+                apply_tags (str): How you want to edit the Tags. Valid options are add, replace, or remove.
+
+            Raises:
+                :class:`ValueError`: When no ID is given or when theres no options given.
+                :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
+                :class:`~arrapi.exceptions.NotFound`: When there's no movie with that ID or when the Movie hasn't been added to Radarr.
+        """
+        movie = self.get_movie(movie_id=movie_id, tmdb_id=tmdb_id, imdb_id=imdb_id)
+        movie.edit(path=path, move_files=move_files, quality_profile=quality_profile, monitored=monitored,
+                   minimum_availability=minimum_availability, tags=tags, apply_tags=apply_tags)
+        return movie
+
+    def delete_movie(
+            self,
+            movie_id: Optional[int] = None,
+            tmdb_id: Optional[int] = None,
+            imdb_id: Optional[str] = None,
+            addImportExclusion: bool = False,
+            deleteFiles: bool = False
+    ) -> Movie:
+        """ Gets a :class:`~arrapi.objs.reload.Movie` by one of the IDs and deletes it from Radarr.
+
+            Parameters:
+                movie_id (Optional[int]): Search by Radarr Movie ID.
+                tmdb_id (Optional[int]): Search by TMDb ID.
+                imdb_id (Optional[int]): Search by IMDb ID.
+                addImportExclusion (bool): Add Import Exclusion for this Movie.
+                deleteFiles (bool): Delete Files for this Movie.
+
+            Returns:
+                :class:`~arrapi.objs.reload.Movie`: Movie for the ID given.
+
+            Raises:
+                :class:`ValueError`: When no ID is given.
+                :class:`~arrapi.exceptions.NotFound`: When there's no movie with that ID or when the Movie hasn't been added to Radarr.
+        """
+        movie = self.get_movie(movie_id=movie_id, tmdb_id=tmdb_id, imdb_id=imdb_id)
+        movie.delete(addImportExclusion=addImportExclusion, deleteFiles=deleteFiles)
+        return movie
+
+    def add_multiple_movies(self, ids: List[Union[int, str, Movie, Tuple[Union[int, str, Movie], str]]],
                             root_folder: Union[str, int, RootFolder],
                             quality_profile: Union[str, int, QualityProfile],
                             monitor: bool = True,

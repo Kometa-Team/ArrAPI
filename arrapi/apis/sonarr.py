@@ -137,7 +137,121 @@ class SonarrAPI(BaseAPI):
         """
         return [Series(self, data=d) for d in self._raw.get_series_lookup(term)]
 
-    def add_multiple_series(self, ids: List[Union[Series, int]],
+    def add_series(
+            self,
+            root_folder: Union[str, int, "RootFolder"],
+            quality_profile: Union[str, int, "QualityProfile"],
+            language_profile: Union[str, int, "LanguageProfile"],
+            series_id: Optional[int] = None,
+            tvdb_id: Optional[int] = None,
+            monitor: str = "all",
+            season_folder: bool = True,
+            search: bool = True,
+            unmet_search: bool = True,
+            series_type: str = "standard",
+            tags: Optional[List[Union[str, int, Tag]]] = None
+    ) -> Series:
+        """ Gets a :class:`~arrapi.objs.reload.Series` by one of the IDs and adds it to Sonarr.
+
+            Parameters:
+                root_folder (Union[str, int, RootFolder]): Root Folder for the Series.
+                quality_profile (Union[str, int, QualityProfile]): Quality Profile for the Series.
+                language_profile (Union[str, int, LanguageProfile]): Language Profile for the Series.
+                series_id (Optional[int]): Search by Sonarr Series ID.
+                tvdb_id (Optional[int]): Search by TVDb ID.
+                monitor (bool): How to monitor the Series. Valid options are all, future, missing, existing, pilot, firstSeason, latestSeason, or none.
+                season_folder (bool): Use Season Folders for the Series.
+                search (bool): Start search for missing episodes of the Series after adding.
+                unmet_search (bool): Start search for cutoff unmet episodes of the Series after adding.
+                series_type (str): Series Type for the Series. Valid options are standard, daily, or anime.
+                tags (Optional[List[Union[str, int, Tag]]]): Tags to be added to the Series.
+
+            Returns:
+                :class:`~arrapi.objs.reload.Series`: Series for the ID given.
+
+            Raises:
+                :class:`ValueError`: When no ID is given.
+                :class:`~arrapi.exceptions.NotFound`: When there's no series with that ID.
+                :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
+                :class:`~arrapi.exceptions.Exists`: When the Series already Exists in Sonarr.
+        """
+        series = self.get_series(series_id=series_id, tvdb_id=tvdb_id)
+        series.add(root_folder, quality_profile, language_profile, monitor=monitor, season_folder=season_folder,
+                   search=search, unmet_search=unmet_search, series_type=series_type, tags=tags)
+        return series
+
+    def edit_series(
+            self,
+            series_id: Optional[int] = None,
+            tvdb_id: Optional[int] = None,
+            path: Optional[str] = None,
+            move_files: bool = False,
+            quality_profile: Optional[Union[str, int, "QualityProfile"]] = None,
+            language_profile: Optional[Union[str, int, "LanguageProfile"]] = None,
+            monitor: Optional[str] = None,
+            monitored: Optional[bool] = None,
+            season_folder: Optional[bool] = None,
+            series_type: Optional[str] = None,
+            tags: Optional[List[Union[str, int, Tag]]] = None,
+            apply_tags: str = "add"
+            ) -> Series:
+        """ Gets a :class:`~arrapi.objs.reload.Series` by one of the IDs and edits it in Sonarr.
+
+            Parameters:
+                series_id (Optional[int]): Search by Sonarr Series ID.
+                tvdb_id (Optional[int]): Search by TVDb ID.
+                path (Optional[str]): Path to change the Series to.
+                move_files (bool): When changing the path do you want to move the files to the new path.
+                quality_profile (Optional[Union[str, int, QualityProfile]]): Quality Profile to change the Series to.
+                language_profile (Optional[Union[str, int, LanguageProfile]]): Language Profile to change the Series to.
+                monitor (Optional[str]): How you want the Series monitored. Valid options are all, future, missing, existing, pilot, firstSeason, latestSeason, or none.
+                monitored (Optional[bool]): Monitor the Series.
+                season_folder (Optional[bool]): Use Season Folders for the Series.
+                series_type (Optional[str]): Series Type to change the Series to. Valid options are standard, daily, or anime.
+                tags (Optional[List[Union[str, int, Tag]]]): Tags to be added, replaced, or removed from the Series.
+                apply_tags (str): How you want to edit the Tags. Valid options are add, replace, or remove.
+
+            Returns:
+                :class:`~arrapi.objs.reload.Series`: Series for the ID given.
+
+            Raises:
+                :class:`ValueError`: When no ID is given or when theres no options given.
+                :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
+                :class:`~arrapi.exceptions.NotFound`: When there's no series with that ID or when the Series hasn't been added to Sonarr.
+        """
+        series = self.get_series(series_id=series_id, tvdb_id=tvdb_id)
+        series.edit(path=path, move_files=move_files, quality_profile=quality_profile,
+                    language_profile=language_profile, monitor=monitor, monitored=monitored,
+                    season_folder=season_folder, series_type=series_type, tags=tags, apply_tags=apply_tags)
+        return series
+
+    def delete_series(
+            self,
+            series_id: Optional[int] = None,
+            tvdb_id: Optional[int] = None,
+            addImportExclusion: bool = False,
+            deleteFiles: bool = False
+    ) -> Series:
+        """ Gets a :class:`~arrapi.objs.reload.Series` by one of the IDs and deletes it from Sonarr.
+
+            Parameters:
+                series_id (Optional[int]): Search by Sonarr Series ID.
+                tvdb_id (Optional[int]): Search by TVDb ID.
+                addImportExclusion (bool): Add Import Exclusion for this Series.
+                deleteFiles (bool): Delete Files for this Series.
+
+            Returns:
+                :class:`~arrapi.objs.reload.Series`: Series for the ID given.
+
+            Raises:
+                :class:`ValueError`: When no ID is given.
+                :class:`~arrapi.exceptions.NotFound`: When there's no series with that ID or when the Series hasn't been added to Sonarr.
+        """
+        series = self.get_series(series_id=series_id, tvdb_id=tvdb_id)
+        series.delete(addImportExclusion=addImportExclusion, deleteFiles=deleteFiles)
+        return series
+
+    def add_multiple_series(self, ids: List[Union[Series, int, Tuple[Union[Series, int], str]]],
                             root_folder: Union[str, int, RootFolder],
                             quality_profile: Union[str, int, QualityProfile],
                             language_profile: Union[str, int, LanguageProfile],

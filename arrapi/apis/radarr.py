@@ -134,8 +134,12 @@ class RadarrAPI(BaseAPI):
                             ) -> Tuple[List[Movie], List[Movie], List[Union[int, str, Movie]]]:
         """ Adds multiple Movies to Radarr in a single call by their TMDb IDs.
 
+            You can specify the path for each TMDb ID using a tuple in the list instead of just the ID ex. ``(11, "/media/Star Wars (1977)/")``
+
+            The path provided must begin with the root_folder specified.
+
             Parameters:
-                ids (List[Union[int, str, Movie]]): List of TMDB IDs, IMDb IDs, or Movie lookups to add.
+                ids (List[Union[int, str, Movie, Tuple[Union[int, str, Movie], str]]]): List of TMDB IDs, IMDb IDs, or Movie lookups to add.
                 root_folder (Union[str, int, RootFolder]): Root Folder for the Movies.
                 quality_profile (Union[str, int, QualityProfile]): Quality Profile for the Movies.
                 monitor (bool): Monitor the Movies.
@@ -157,6 +161,8 @@ class RadarrAPI(BaseAPI):
         existing_movies = []
         invalid_ids = []
         for item in ids:
+            path = item[1] if isinstance(item, tuple) else None
+            item = item[0] if isinstance(item, tuple) else item
             try:
                 if isinstance(item, Movie):
                     movie = item
@@ -169,7 +175,7 @@ class RadarrAPI(BaseAPI):
                 if self.exclusions and movie.tmdbId in self.exclusions:
                     raise NotFound
                 try:
-                    json.append(movie._get_add_data(options))
+                    json.append(movie._get_add_data(options, path=path))
                 except Exists:
                     existing_movies.append(movie)
             except NotFound:

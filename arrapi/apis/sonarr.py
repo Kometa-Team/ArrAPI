@@ -151,8 +151,12 @@ class SonarrAPI(BaseAPI):
                             ) -> Tuple[List[Series], List[Series], List[Union[int, Series]]]:
         """ Adds multiple Series to Sonarr in a single call by their TVDb IDs.
 
+            You can specify the path for each TVDb ID using a tuple in the list instead of just the ID ex. ``(121361, "/media/Game of Thrones/")``
+
+            The path provided must begin with the root_folder specified.
+
             Parameters:
-                ids (List[Union[int, Series]]): List of TVDB IDs or Series lookups to add.
+                ids (List[Union[Series, int, Tuple[Union[Series, int], str]]]): List of TVDB IDs or Series lookups to add.
                 root_folder (Union[str, int, RootFolder]): Root Folder for the Series.
                 quality_profile (Union[str, int, QualityProfile]): Quality Profile for the Series.
                 language_profile (Union[str, int, LanguageProfile]): Language Profile for the Series.
@@ -178,6 +182,8 @@ class SonarrAPI(BaseAPI):
         existing_series = []
         invalid_ids = []
         for item in ids:
+            path = item[1] if isinstance(item, tuple) else None
+            item = item[0] if isinstance(item, tuple) else item
             try:
                 if isinstance(item, Series):
                     show = item
@@ -188,7 +194,7 @@ class SonarrAPI(BaseAPI):
                 if self.exclusions and show.tvdbId in self.exclusions:
                     raise NotFound
                 try:
-                    json.append(show._get_add_data(options))
+                    json.append(show._get_add_data(options, path=path))
                 except Exists:
                     existing_series.append(show)
             except NotFound:

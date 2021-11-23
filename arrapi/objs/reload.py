@@ -257,11 +257,17 @@ class Movie(ReloadObj):
         else:
             raise Invalid("Load Failed: No Load Input")
 
-    def _get_add_data(self, options):
+    def _get_add_data(self, options, path=None):
         if self.id:
             raise Exists(f"{self.title} is already in Radarr")
         self._data.pop("Id", None)
         self._data["monitored"] = options["monitor"]
+        if path:
+            if not path.startswith(options["root_folder"]):
+                raise Invalid(f"Individual Path: {path} must start with the Root Folder: {options['root_folder']} ")
+            self._data["path"] = path
+        else:
+            self._data["rootFolderPath"] = options["root_folder"]
         self._data["rootFolderPath"] = options["root_folder"]
         self._data["qualityProfileId" if self._raw.v3 else "profileId"] = options["quality_profile"]
         self._data["minimumAvailability"] = options["minimum_availability"]
@@ -493,11 +499,17 @@ class Series(ReloadObj):
         else:
             raise Invalid("Load Failed: No Load Input")
 
-    def _get_add_data(self, options):
+    def _get_add_data(self, options, path=None):
         if self.id:
             raise Exists(f"{self.title} is already in Sonarr")
         self._data.pop("Id", None)
         self._data["rootFolderPath"] = options["root_folder"]
+        if path:
+            if not path.startswith(options["root_folder"]):
+                raise Invalid(f"Individual Path: {path} must start with the Root Folder: {options['root_folder']} ")
+            self._data["path"] = path
+        else:
+            self._data["rootFolderPath"] = options["root_folder"]
         self._data["monitored"] = options["monitored"]
         self._data["qualityProfileId" if self._raw.v3 else "profileId"] = options["quality_profile"]
         self._data["languageProfileId"] = options["language_profile"]

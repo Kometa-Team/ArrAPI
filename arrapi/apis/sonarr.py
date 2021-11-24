@@ -82,18 +82,24 @@ class SonarrAPI(BaseAPI):
         """ Validate Series Type options. """
         return self._validate_options("Series Type", series_type, self.series_type_options)
 
-    def _validate_tvdb_ids(self, tvdb_ids):
+    def _validate_tvdb_ids(self, ids):
         """ Validate TVDb IDs. """
         valid_ids = []
         invalid_ids = []
-        tvdb_sonarr_ids = {m.tvdbId: m for m in self.all_series()}
-        for tvdb_id in tvdb_ids:
-            if isinstance(tvdb_id, Series):
-                tvdb_id = tvdb_id.tvdbId
-            if tvdb_id in tvdb_sonarr_ids:
-                valid_ids.append(tvdb_sonarr_ids[tvdb_id].id)
+        used_ids = []
+        sonarr_ids = {}
+        for s in self.all_series():
+            sonarr_ids[s.tvdbId] = s
+            sonarr_ids[str(s.tvdbId)] = s
+        for _id in ids:
+            if isinstance(_id, Series) and str(_id.tvdbId) not in used_ids:
+                valid_ids.append(_id.id)
+                used_ids.append(str(_id.tvdbId))
+            elif _id in sonarr_ids and str(_id.tvdbId) not in used_ids:
+                valid_ids.append(sonarr_ids[_id].id)
+                used_ids.append(str(_id))
             else:
-                invalid_ids.append(tvdb_id)
+                invalid_ids.append(_id)
         return valid_ids, invalid_ids
 
     def respect_list_exclusions_when_adding(self):
@@ -295,24 +301,26 @@ class SonarrAPI(BaseAPI):
         series = []
         existing_series = []
         invalid_ids = []
-        for item in ids:
-            path = item[1] if isinstance(item, tuple) else None
-            item = item[0] if isinstance(item, tuple) else item
+        used_ids = []
+        for input_item in ids:
+            path = input_item[1] if isinstance(input_item, tuple) else None
+            item = input_item[0] if isinstance(input_item, tuple) else input_item
             try:
                 if isinstance(item, Series):
                     show = item
                 else:
-                    if self.exclusions and int(item) in self.exclusions:
+                    if int(item) in used_ids or (self.exclusions and int(item) in self.exclusions):
                         raise NotFound
                     show = self.get_series(tvdb_id=item)
-                if self.exclusions and show.tvdbId in self.exclusions:
+                if show.tvdbId in used_ids or (self.exclusions and show.tvdbId in self.exclusions):
                     raise NotFound
+                used_ids.append(show.tmdbId)
                 try:
                     json.append(show._get_add_data(options, path=path))
                 except Exists:
                     existing_series.append(show)
             except NotFound:
-                invalid_ids.append(item)
+                invalid_ids.append(input_item)
         if len(json) > 0:
             if per_request is None:
                 per_request = len(json)

@@ -67,16 +67,21 @@ class RadarrAPI(BaseAPI):
         """ Validate IDs. """
         valid_ids = []
         invalid_ids = []
+        used_ids = []
         radarr_ids = {}
         for m in self.all_movies():
             radarr_ids[m.tmdbId] = m
             radarr_ids[str(m.tmdbId)] = m
             radarr_ids[m.imdbId] = m
         for _id in ids:
-            if isinstance(_id, Movie):
+            if isinstance(_id, Movie) and str(_id.tmdbId) not in used_ids and str(_id.imdbId) not in used_ids:
                 valid_ids.append(_id.id)
-            elif _id in radarr_ids:
+                used_ids.append(str(_id.tmdbId))
+                used_ids.append(str(_id.imdbId))
+            elif _id in radarr_ids and str(_id.tmdbId) not in used_ids and str(_id.imdbId) not in used_ids:
                 valid_ids.append(radarr_ids[_id].id)
+                used_ids.append(str(_id.tmdbId))
+                used_ids.append(str(_id.imdbId))
             else:
                 invalid_ids.append(_id)
         return valid_ids, invalid_ids
@@ -264,26 +269,28 @@ class RadarrAPI(BaseAPI):
         movies = []
         existing_movies = []
         invalid_ids = []
-        for item in ids:
-            path = item[1] if isinstance(item, tuple) else None
-            item = item[0] if isinstance(item, tuple) else item
+        used_ids = []
+        for input_item in ids:
+            path = input_item[1] if isinstance(input_item, tuple) else None
+            item = input_item[0] if isinstance(input_item, tuple) else input_item
             try:
                 if isinstance(item, Movie):
                     movie = item
                 elif str(item).startswith("tt"):
                     movie = self.get_movie(imdb_id=item)
                 else:
-                    if self.exclusions and int(item) in self.exclusions:
+                    if int(item) in used_ids or (self.exclusions and int(item) in self.exclusions):
                         raise NotFound
                     movie = self.get_movie(tmdb_id=item)
-                if self.exclusions and movie.tmdbId in self.exclusions:
+                if movie.tmdbId in used_ids or (self.exclusions and movie.tmdbId in self.exclusions):
                     raise NotFound
+                used_ids.append(movie.tmdbId)
                 try:
                     json.append(movie._get_add_data(options, path=path))
                 except Exists:
                     existing_movies.append(movie)
             except NotFound:
-                invalid_ids.append(item)
+                invalid_ids.append(input_item)
         if len(json) > 0:
             if per_request is None:
                 per_request = len(json)

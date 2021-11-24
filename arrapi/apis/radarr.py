@@ -78,10 +78,9 @@ class RadarrAPI(BaseAPI):
                 valid_ids.append(_id.id)
                 used_ids.append(str(_id.tmdbId))
                 used_ids.append(str(_id.imdbId))
-            elif _id in radarr_ids and str(_id.tmdbId) not in used_ids and str(_id.imdbId) not in used_ids:
+            elif _id in radarr_ids and str(_id) not in used_ids:
                 valid_ids.append(radarr_ids[_id].id)
-                used_ids.append(str(_id.tmdbId))
-                used_ids.append(str(_id.imdbId))
+                used_ids.append(str(_id))
             else:
                 invalid_ids.append(_id)
         return valid_ids, invalid_ids

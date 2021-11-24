@@ -95,7 +95,7 @@ class SonarrAPI(BaseAPI):
             if isinstance(_id, Series) and str(_id.tvdbId) not in used_ids:
                 valid_ids.append(_id.id)
                 used_ids.append(str(_id.tvdbId))
-            elif _id in sonarr_ids and str(_id.tvdbId) not in used_ids:
+            elif _id in sonarr_ids and str(_id) not in used_ids:
                 valid_ids.append(sonarr_ids[_id].id)
                 used_ids.append(str(_id))
             else:

@@ -314,7 +314,7 @@ class SonarrAPI(BaseAPI):
                     show = self.get_series(tvdb_id=item)
                 if show.tvdbId in used_ids or (self.exclusions and show.tvdbId in self.exclusions):
                     raise NotFound
-                used_ids.append(show.tmdbId)
+                used_ids.append(show.tvdbId)
                 try:
                     json.append(show._get_add_data(options, path=path))
                 except Exists:

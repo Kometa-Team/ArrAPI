@@ -9,11 +9,13 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
 """
 class RadarrTests(unittest.TestCase):
+    radarr = None
+    root = "/config"
+    profile = "HD-1080p"
+    profile2 = "HD - 720p/1080p"
+
     @classmethod
     def setUpClass(cls):
-        cls.root = "/config"
-        cls.profile = "HD-1080p"
-        cls.profile2 = "HD - 720p/1080p"
         cls.radarr = RadarrAPI(os.environ["RADARR_URL"], os.environ["RADARR_APIKEY"])
         has_config = False
         for rf in cls.radarr.root_folder():

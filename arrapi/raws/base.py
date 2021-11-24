@@ -60,20 +60,28 @@ class BaseRawAPI(ABC):
                 response = self.session.put(request_url, json=json, params=url_params)
             else:
                 response = self.session.get(request_url, params=url_params)
-            response_json = response.json()
-        except (RequestException, JSONDecodeError):
+        except RequestException:
             raise ConnectionFailure(f"Failed to Connect to {self.url}")
-        logger.debug(f"Response ({response.status_code} [{response.reason}]) {response_json}")
-        if response.status_code == 401:
-            raise Unauthorized(f"({response.status_code} [{response.reason}]) Invalid API Key {response_json}")
-        elif response.status_code == 404:
-            raise NotFound(f"({response.status_code} [{response.reason}]) Item Not Found {response_json}")
-        elif response.status_code >= 400:
-            if isinstance(response_json, list) and "errorMessage" in response_json[0]:
-                raise ArrException(f"({response.status_code} [{response.reason}]) {response_json[0]['errorMessage']}")
+        try:
+            response_json = response.json()
+        except JSONDecodeError:
+            logger.debug(f"Response ({response.status_code} [{response.reason}]) {response.content}")
+            if response.status_code >= 400:
+                raise ArrException(f"({response.status_code} [{response.reason}]) {response.content}")
             else:
-                raise ArrException(f"({response.status_code} [{response.reason}]) {response_json}")
-        return response_json
+                return None
+        else:
+            logger.debug(f"Response ({response.status_code} [{response.reason}]) {response_json}")
+            if response.status_code == 401:
+                raise Unauthorized(f"({response.status_code} [{response.reason}]) Invalid API Key {response_json}")
+            elif response.status_code == 404:
+                raise NotFound(f"({response.status_code} [{response.reason}]) Item Not Found {response_json}")
+            elif response.status_code >= 400:
+                if isinstance(response_json, list) and "errorMessage" in response_json[0]:
+                    raise ArrException(f"({response.status_code} [{response.reason}]) {response_json[0]['errorMessage']}")
+                else:
+                    raise ArrException(f"({response.status_code} [{response.reason}]) {response_json}")
+            return response_json
 
     def get_tag(self, detail=False):
         """ GET /tag and GET /tag/detail """

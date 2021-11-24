@@ -9,12 +9,14 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
 """
 class SonarrTests(unittest.TestCase):
+    sonarr = None
+    root = "/config"
+    profile = "HD-1080p"
+    profile2 = "HD - 720p/1080p"
+    language = "English"
+
     @classmethod
     def setUpClass(cls):
-        cls.root = "/config"
-        cls.profile = "HD-1080p"
-        cls.profile2 = "HD - 720p/1080p"
-        cls.language = "English"
         cls.sonarr = SonarrAPI(os.environ["SONARR_URL"], os.environ["SONARR_APIKEY"])
         has_config = False
         for rf in cls.sonarr.root_folder():

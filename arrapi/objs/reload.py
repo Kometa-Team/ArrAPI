@@ -172,6 +172,7 @@ class Movie(ReloadObj):
             minimumAvailability (str): Minimum Availability of the Movie.
             isAvailable (bool): If the Movie is Available.
             folderName (str): Folder Name of the Movie.
+            folder (str): Folder name.
             runtime (int): Runtime of the Movie.
             cleanTitle (str): Clean Title of the Movie.
             imdbId (str): IMDb ID of the Movie.
@@ -220,6 +221,7 @@ class Movie(ReloadObj):
         self.minimumAvailability = self._parse(attrs="minimumAvailability")
         self.isAvailable = self._parse(attrs="isAvailable", value_type="bool")
         self.folderName = self._parse(attrs="folderName")
+        self.folder = self._parse(attrs="folder")
         self.runtime = self._parse(attrs="runtime", value_type="int")
         self.cleanTitle = self._parse(attrs="cleanTitle")
         self.imdbId = self._parse(attrs="imdbId")
@@ -394,6 +396,7 @@ class Series(ReloadObj):
             seasonFolder (bool): If the Series has Season Folders.
             monitored (bool): If the Series is monitored.
             useSceneNumbering (bool): If the Series uses Scene Numbering.
+            folder (str): Folder name.
             runtime (int): Runtime of the Series.
             cleanTitle (str): Clean Title of the Series.
             imdbId (str): IMDb ID of the Series.
@@ -446,6 +449,7 @@ class Series(ReloadObj):
         self.seasonFolder = self._parse(attrs="seasonFolder", value_type="bool")
         self.monitored = self._parse(attrs="monitored", value_type="bool")
         self.useSceneNumbering = self._parse(attrs="useSceneNumbering", value_type="bool")
+        self.folder = self._parse(attrs="folder")
         self.runtime = self._parse(attrs="runtime", value_type="int")
         self.cleanTitle = self._parse(attrs="cleanTitle")
         self.imdbId = self._parse(attrs="imdbId")

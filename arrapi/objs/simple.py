@@ -8,6 +8,23 @@ class SimpleObj(BaseObj):
         super()._load(data)
 
 
+class Image(SimpleObj):
+    """ Represents a single Image.
+
+        Attributes:
+            coverType (str): Cover Type of the Image.
+            url (str): URL of the Image.
+            remoteUrl (str): Remote URL of the Image.
+    """
+
+    def _load(self, data):
+        super()._load(data)
+        self.coverType = self._parse(attrs="coverType")
+        self.url = self._parse(attrs="url")
+        self.remoteUrl = self._parse(attrs="remoteUrl")
+        self._finish(self.name)
+
+
 class MetadataProfile(SimpleObj):
     """ Represents a single Metadata Profile.
 

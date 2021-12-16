@@ -162,6 +162,7 @@ class Movie(ReloadObj):
             overview (str): Overview of the Movie.
             inCinemas (datetime): Date the Movie was in Cinemas.
             physicalRelease (datetime): Date the Movie was Physically Released.
+            images (List[:class:`~arrapi.objs.simple.Image`]: List of Images for the Series
             website (str): Website of the Movie.
             year (int): Year of the Movie.
             hasFile (bool): If the Movie has a file.
@@ -211,6 +212,7 @@ class Movie(ReloadObj):
         self.overview = self._parse(attrs="overview")
         self.inCinemas = self._parse(attrs="inCinemas", value_type="date")
         self.physicalRelease = self._parse(attrs="physicalRelease", value_type="date")
+        self.images = self._parse(attrs="images", value_type="image", is_list=True)
         self.website = self._parse(attrs="website")
         self.year = self._parse(attrs="year", value_type="int")
         self.hasFile = self._parse(attrs="hasFile", value_type="bool")
@@ -389,6 +391,7 @@ class Series(ReloadObj):
             previousAiring (datetime): Date the latest Episode in the Series Aired.
             network (str): Network the Series Airs on.
             airTime (str): Time Series Airs.
+            images (List[:class:`~arrapi.objs.simple.Image`]: List of Images for the Series
             year (int): Year of the Series.
             path (str): Path of the Series.
             languageProfileId (int): Language Profile ID of the Series.
@@ -442,6 +445,7 @@ class Series(ReloadObj):
         self.previousAiring = self._parse(attrs="previousAiring", value_type="date")
         self.network = self._parse(attrs="network")
         self.airTime = self._parse(attrs="airTime")
+        self.images = self._parse(attrs="images", value_type="image", is_list=True)
         self.year = self._parse(attrs="year", value_type="int")
         self.path = self._parse(attrs="path")
         self.languageProfileId = self._parse(attrs="languageProfileId", value_type="int")

@@ -235,7 +235,7 @@ class SonarrAPI(BaseAPI):
             self,
             series_id: Optional[int] = None,
             tvdb_id: Optional[int] = None,
-            addImportExclusion: bool = False,
+            addImportListExclusion: bool = False,
             deleteFiles: bool = False
     ) -> Series:
         """ Gets a :class:`~arrapi.objs.reload.Series` by one of the IDs and deletes it from Sonarr.
@@ -243,7 +243,7 @@ class SonarrAPI(BaseAPI):
             Parameters:
                 series_id (Optional[int]): Search by Sonarr Series ID.
                 tvdb_id (Optional[int]): Search by TVDb ID.
-                addImportExclusion (bool): Add Import Exclusion for this Series.
+                addImportListExclusion (bool): Add Import Exclusion for this Series.
                 deleteFiles (bool): Delete Files for this Series.
 
             Returns:
@@ -254,7 +254,7 @@ class SonarrAPI(BaseAPI):
                 :class:`~arrapi.exceptions.NotFound`: When there's no series with that ID or when the Series hasn't been added to Sonarr.
         """
         series = self.get_series(series_id=series_id, tvdb_id=tvdb_id)
-        series.delete(addImportExclusion=addImportExclusion, deleteFiles=deleteFiles)
+        series.delete(addImportListExclusion=addImportListExclusion, deleteFiles=deleteFiles)
         return series
 
     def add_multiple_series(self, ids: List[Union[Series, int, Tuple[Union[Series, int], str]]],

@@ -39,11 +39,11 @@ class SonarrRawAPI(BaseRawAPI):
         """ PUT /series/editor """
         return self._put("series/editor", json=json)
 
-    def delete_series_id(self, series_id, addImportExclusion=False, deleteFiles=False):
+    def delete_series_id(self, series_id, addImportListExclusion=False, deleteFiles=False):
         """ DELETE /series/{id} """
         params = {}
-        if addImportExclusion:
-            params["addImportExclusion"] = "true"
+        if addImportListExclusion:
+            params["addImportListExclusion"] = "true"
         if deleteFiles:
             params["deleteFiles"] = "true"
         self._delete(f"series/{series_id}", **params)

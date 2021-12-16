@@ -634,11 +634,11 @@ class Series(ReloadObj):
                 self._data[key] = value
         self._load(self._raw.put_series_id(self.id, self._data, moveFiles=valid_move_files))
 
-    def delete(self, addImportExclusion: bool = False, deleteFiles: bool = False) -> None:
+    def delete(self, addImportListExclusion: bool = False, deleteFiles: bool = False) -> None:
         """ Delete this Series from Sonarr.
 
             Parameters:
-                addImportExclusion (bool): Add Import Exclusion for this Series.
+                addImportListExclusion (bool): Add Import Exclusion for this Series.
                 deleteFiles (bool): Delete Files for this Series.
 
             Raises:
@@ -646,7 +646,7 @@ class Series(ReloadObj):
         """
         if not self.id:
             raise NotFound(f"{self.title} not found in Sonarr, it must be added before deleting")
-        self._raw.delete_series_id(self.id, addImportExclusion=addImportExclusion, deleteFiles=deleteFiles)
+        self._raw.delete_series_id(self.id, addImportListExclusion=addImportListExclusion, deleteFiles=deleteFiles)
         self._loading = True
         self.id = None
         self._loading = False

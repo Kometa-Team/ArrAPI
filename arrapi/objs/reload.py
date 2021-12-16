@@ -163,7 +163,7 @@ class Movie(ReloadObj):
             inCinemas (datetime): Date the Movie was in Cinemas.
             physicalRelease (datetime): Date the Movie was Physically Released.
             digitalRelease (datetime): Date the Movie was Digitally Released.
-            images (List[:class:`~arrapi.objs.simple.Image`]: List of Images for the Series
+            images (List[:class:`~arrapi.objs.simple.Image`]): List of Images for the Movie.
             website (str): Website of the Movie.
             year (int): Year of the Movie.
             hasFile (bool): If the Movie has a file.
@@ -395,7 +395,7 @@ class Series(ReloadObj):
             previousAiring (datetime): Date the latest Episode in the Series Aired.
             network (str): Network the Series Airs on.
             airTime (str): Time Series Airs.
-            images (List[:class:`~arrapi.objs.simple.Image`]: List of Images for the Series
+            images (List[:class:`~arrapi.objs.simple.Image`]): List of Images for the Series.
             year (int): Year of the Series.
             path (str): Path of the Series.
             languageProfileId (int): Language Profile ID of the Series.

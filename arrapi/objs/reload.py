@@ -150,6 +150,53 @@ class Tag(ReloadObj):
         self._raw.delete_tag_id(self.id)
 
 
+class Command(ReloadObj):
+    """ Represents a single Command.
+
+        Attributes:
+            name (str): Name.
+            commandName (str): Full named.
+            message (str): Status Message.
+            body (dict): Body of dict sent with the command.
+            priority (str): Priority level.
+            status (str): Status state.
+            queued (datetime): Datetime queued.
+            started (datetime): Datetime started.
+            ended (datetime): Datetime ended.
+            duration (str): Duration.
+            exception (str): Exception message if there is a failure.
+            trigger (str): Command trigger.
+            stateChangeTime (datetime): Datetime the sate was cahnged.
+            sendUpdatesToClient (bool): Send Updates To Client.
+            updateScheduledTask (bool):Update Scheduled Task.
+            id (int): ID of the Command.
+    """
+
+    def _load(self, data):
+        super()._load(data)
+        self.name = self._parse(attrs="name")
+        self.commandName = self._parse(attrs="commandName")
+        self.message = self._parse(attrs="message")
+        self.body = self._parse(attrs="body", value_type="dict")
+        self.priority = self._parse(attrs="priority")
+        self.status = self._parse(attrs="status")
+        self.queued = self._parse(attrs="queued", value_type="date")
+        self.started = self._parse(attrs="started", value_type="date")
+        self.ended = self._parse(attrs="ended", value_type="date")
+        self.duration = self._parse(attrs="duration")
+        self.exception = self._parse(attrs="exception")
+        self.trigger = self._parse(attrs="trigger")
+        self.sendUpdatesToClient = self._parse(attrs="sendUpdatesToClient", value_type="bool")
+        self.updateScheduledTask = self._parse(attrs="updateScheduledTask", value_type="bool")
+        self.stateChangeTime = self._parse(attrs="stateChangeTime", value_type="date")
+        self.lastExecutionTime = self._parse(attrs="lastExecutionTime", value_type="date")
+        self.id = self._parse(attrs="id", value_type="int")
+        self._finish(self.name)
+
+    def _full_load(self):
+        return self._raw.get_command_id(self.id)
+
+
 class Movie(ReloadObj):
     """ Represents a single Movie.
 

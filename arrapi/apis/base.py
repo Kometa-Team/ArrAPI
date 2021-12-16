@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from arrapi import Invalid, SystemStatus, QualityProfile, MetadataProfile, RootFolder, Tag, RemotePathMapping
 from typing import List
 
+from arrapi.objs.reload import Command
+
 
 class BaseAPI(ABC):
     @abstractmethod
@@ -124,6 +126,43 @@ class BaseAPI(ABC):
                 :class:`~arrapi.exceptions.NotFound`: When there's no tag with that ID.
         """
         self._raw.delete_tag_id(tag_id)
+
+    def all_commands(self) -> List[Command]:
+        """ Gets a list of :class:`~arrapi.objs.reload.Command`.
+
+            Returns:
+                List[:class:`~arrapi.objs.reload.Command`]: List of Commands
+        """
+        return [Command(self, data) for data in self._raw.get_command()]
+
+    def get_command(self, command_id: int) -> Command:
+        """  Get a :class:`~arrapi.objs.reload.Command` by its ID.
+
+            Parameters:
+                command_id (int): ID of command.
+
+            Returns:
+                :class:`~arrapi.objs.reload.Command`: Command of the ID given.
+
+            Raises:
+                :class:`~arrapi.exceptions.NotFound`: When there's no command with that ID.
+        """
+        return Command(self, {"id": command_id}, load=True)
+
+    def send_command(self, command: str, **kwargs) -> Command:
+        """  Sends a command.
+
+            Parameters:
+                command (str): name of command to send.
+                kwargs (dict): additional json parameters.
+
+            Returns:
+                :class:`~arrapi.objs.reload.Command`: Command created.
+
+            Raises:
+                :class:`~arrapi.exceptions.Invalid`: When the command given is invalid.
+        """
+        return Command(self, self._raw.post_command(command, **kwargs))
 
     def _validate_quality_profile(self, quality_profile):
         """ Validate Quality Profile options. """

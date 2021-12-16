@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from json.decoder import JSONDecodeError
 from requests import Session
 from requests.exceptions import RequestException
-from arrapi import ArrException, ConnectionFailure, NotFound, Unauthorized
+from arrapi import ArrException, ConnectionFailure, NotFound, Unauthorized, Invalid
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +76,8 @@ class BaseRawAPI(ABC):
                 raise Unauthorized(f"({response.status_code} [{response.reason}]) Invalid API Key {response_json}")
             elif response.status_code == 404:
                 raise NotFound(f"({response.status_code} [{response.reason}]) Item Not Found {response_json}")
+            elif response.status_code == 500 and "message" in response_json and response_json["message"] == "Sequence contains no matching element":
+                raise Invalid(f"({response.status_code} [{response.reason}]) Invalid option provided")
             elif response.status_code >= 400:
                 if isinstance(response_json, list) and "errorMessage" in response_json[0]:
                     raise ArrException(f"({response.status_code} [{response.reason}]) {response_json[0]['errorMessage']}")
@@ -102,6 +104,20 @@ class BaseRawAPI(ABC):
     def delete_tag_id(self, tag_id):
         """ DELETE /tag/{id} """
         return self._delete(f"tag/{tag_id}")
+
+    def get_command(self):
+        """ GET /command """
+        return self._get("command")
+
+    def get_command_id(self, command_id):
+        """ GET /command/{id} """
+        return self._get(f"command/{command_id}")
+
+    def post_command(self, command, **kwargs):
+        """ POST /command """
+        json = {k: v for k, v in kwargs.items()}
+        json["name"] = command
+        return self._post("command", json=json)
 
     def get_qualityProfile(self):
         """" GET /qualityProfile for v3 and GET /profile for v2 """

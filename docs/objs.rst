@@ -54,10 +54,24 @@ Language Profile
     :members:
 
 
+Image
+--------------------
+
+.. autoclass:: arrapi.objs.simple.Image
+    :members:
+
+
 Tag
 --------------------
 
 .. autoclass:: arrapi.objs.reload.Tag
+    :members:
+
+
+Command
+--------------------
+
+.. autoclass:: arrapi.objs.reload.Command
     :members:
 
 

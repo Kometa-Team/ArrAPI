@@ -22,7 +22,7 @@ class Image(SimpleObj):
         self.coverType = self._parse(attrs="coverType")
         self.url = self._parse(attrs="url")
         self.remoteUrl = self._parse(attrs="remoteUrl")
-        self._finish(self.name)
+        self._finish(self.remoteUrl)
 
 
 class MetadataProfile(SimpleObj):

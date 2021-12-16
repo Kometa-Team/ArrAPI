@@ -162,6 +162,7 @@ class Movie(ReloadObj):
             overview (str): Overview of the Movie.
             inCinemas (datetime): Date the Movie was in Cinemas.
             physicalRelease (datetime): Date the Movie was Physically Released.
+            digitalRelease (datetime): Date the Movie was Digitally Released.
             images (List[:class:`~arrapi.objs.simple.Image`]: List of Images for the Series
             website (str): Website of the Movie.
             year (int): Year of the Movie.
@@ -182,6 +183,7 @@ class Movie(ReloadObj):
             certification (str): Certification of the Movie.
             genres (List[str]): List of genres for the Movie.
             tags (List[:class:`~arrapi.objs.reload.Tag`]): List of tags for the Movie.
+            added (datetime): Date the Movie was added to Radarr.
             tagsIds (List[int]): List of tag ids for the Movie.
             rating_votes (int): Number of votes for the Movie.
             rating_value (float): Rating of the Movie.
@@ -212,6 +214,7 @@ class Movie(ReloadObj):
         self.overview = self._parse(attrs="overview")
         self.inCinemas = self._parse(attrs="inCinemas", value_type="date")
         self.physicalRelease = self._parse(attrs="physicalRelease", value_type="date")
+        self.digitalRelease = self._parse(attrs="digitalRelease", value_type="date")
         self.images = self._parse(attrs="images", value_type="image", is_list=True)
         self.website = self._parse(attrs="website")
         self.year = self._parse(attrs="year", value_type="int")
@@ -233,6 +236,7 @@ class Movie(ReloadObj):
         self.genres = self._parse(attrs="genres", is_list=True)
         self.tagsIds = self._parse(attrs="tags", value_type="int", is_list=True)
         self.tags = self._parse(attrs="tags", value_type="intTag", is_list=True)
+        self.added = self._parse(attrs="added", value_type="date")
         self.rating_votes = self._parse(attrs=["rating", "votes"], value_type="int")
         self.rating_value = self._parse(attrs=["rating", "value"], value_type="float")
         self.id = self._parse(attrs="id", value_type="int", default_is_none=True)
@@ -412,6 +416,7 @@ class Series(ReloadObj):
             certification (str): Certification of the Series.
             genres (List[str]): List of genres for the Series.
             tags (List[:class:`~arrapi.objs.reload.Tag`]): List of tags for the Movie.
+            added (datetime): Date the Movie was added to Radarr.
             tagsIds (List[int]): List of tag ids for the Movie.
             rating_votes (int): Number of votes for the Series.
             rating_value (float): Rating of the Series.
@@ -467,6 +472,7 @@ class Series(ReloadObj):
         self.genres = self._parse(attrs="genres", is_list=True)
         self.tagsIds = self._parse(attrs="tags", value_type="int", is_list=True)
         self.tags = self._parse(attrs="tags", value_type="intTag", is_list=True)
+        self.added = self._parse(attrs="added", value_type="date")
         if "rating" in self._data:
             self.rating_votes = self._parse(attrs=["rating", "votes"], value_type="int")
             self.rating_value = self._parse(attrs=["rating", "value"], value_type="float")

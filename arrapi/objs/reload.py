@@ -286,6 +286,7 @@ class Movie(ReloadObj):
         self.added = self._parse(attrs="added", value_type="date")
         self.rating_votes = self._parse(attrs=["rating", "votes"], value_type="int")
         self.rating_value = self._parse(attrs=["rating", "value"], value_type="float")
+        self.collection = self._parse(attrs="collection", value_type="collection")
         self.id = self._parse(attrs="id", value_type="int", default_is_none=True)
         if self._raw.v3:
             self.originalTitle = self._parse(attrs="originalTitle")

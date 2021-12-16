@@ -8,6 +8,25 @@ class SimpleObj(BaseObj):
         super()._load(data)
 
 
+class Collection(SimpleObj):
+    """ Represents a single Collection.
+
+        Attributes:
+            name (str): Name of the Collection.
+            tmdbId (int): TMDb Collection ID of the Collection.
+    """
+
+    def _load(self, data):
+        super()._load(data)
+        self.name = self._parse(attrs="name")
+        self.tmdbId = self._parse(attrs="tmdbId", value_type="int")
+        self._finish(self.name)
+
+    def get_url(self):
+        """ URL of the Collection on TMDb"""
+        return f"https://www.themoviedb.org/collection/{self.tmdbId}"
+
+
 class Image(SimpleObj):
     """ Represents a single Image.
 

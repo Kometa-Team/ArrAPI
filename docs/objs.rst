@@ -75,6 +75,13 @@ Command
     :members:
 
 
+Collection
+--------------------
+
+.. autoclass:: arrapi.objs.simple.Collection
+    :members:
+
+
 Remote Path Mapping
 --------------------
 

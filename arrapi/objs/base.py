@@ -113,6 +113,8 @@ class BaseObj(ABC):
                 return default
         elif value_type == "date":
             return datetime.strptime(value[:-1].split(".")[0], "%Y-%m-%dT%H:%M:%S")
+        elif value_type == "collection":
+            return arrapi.objs.simple.Collection(self._arr, value)
         elif value_type == "image":
             return arrapi.objs.simple.Image(self._arr, value)
         elif value_type == "season":

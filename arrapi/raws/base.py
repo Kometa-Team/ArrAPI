@@ -25,7 +25,7 @@ class BaseRawAPI(ABC):
         if "version" not in status or status["version"] is None:
             raise ConnectionFailure(f"Failed to Connect to {self.url}")
         if v1 is False:
-            self.v3 = int(status["version"][0]) > 2
+            self.v3 = int(status["version"].split(".")[0]) > 2
 
     def _get(self, path, **kwargs):
         """ process get request. """

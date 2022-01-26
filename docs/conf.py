@@ -11,7 +11,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 # import os
-import sys
+import sys, datetime
 from os.path import abspath, dirname, join
 path = dirname(dirname(abspath(__file__)))
 sys.path.append(path)
@@ -23,7 +23,7 @@ import arrapi
 
 project = arrapi.__project_name__
 author = arrapi.__author__
-copyright = f"2021, {author}"
+copyright = f"{datetime.datetime.now().year}, {author}"
 
 # The full version, including alpha/beta/rc tags
 release = arrapi.__version__

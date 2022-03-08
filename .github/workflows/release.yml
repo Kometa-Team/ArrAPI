@@ -16,7 +16,7 @@ jobs:
           title: ArrAPI ${{ github.event.ref }}
           repo_token: ${{ secrets.PAT }}
           prerelease: false
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v2
         with:

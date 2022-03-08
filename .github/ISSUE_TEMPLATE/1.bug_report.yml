@@ -1,0 +1,27 @@
+name: Bug Report
+description: Please do not use bug reports for support issues.
+title: '[Bug]: '
+labels: ['status:not-yet-viewed', 'bug']
+assignees: 'meisnate12'
+
+body:
+  - type: markdown
+    attributes:
+      value: >
+        **THIS IS NOT THE PLACE TO ASK FOR SUPPORT!**
+        Please use [Ple Meta Manager Discord](https://discord.gg/NfH6mGFuAB) and post your question under the `plex-meta-manager` channel for support issues.
+  - type: input
+    id: version
+    attributes:
+      label: Version Number
+      description: Can be found at the beginning of your log file
+      placeholder: eg. 1.3.1
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of the bug.
+    validations:
+      required: true

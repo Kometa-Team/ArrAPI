@@ -7,7 +7,7 @@ Welcome to ArrAPI's documentation!
     :alt: Build Testing
 
 .. image:: https://img.shields.io/readthedocs/arrapi?style=plastic
-    :target: https://arrapi.readthedocs.io/en/latest/?badge=latest
+    :target: https://arrapi.metamanager.wiki
     :alt: Read the Docs
 
 .. image:: https://img.shields.io/github/v/release/meisnate12/ArrAPI?style=plastic
@@ -44,7 +44,7 @@ Installation & Documentation
 
 Documentation_ can be found at Read the Docs.
 
-.. _Documentation: http://arrapi.readthedocs.io/en/latest/
+.. _Documentation: https://arrapi.metamanager.wiki
 
 Connecting to Sonarr
 ==========================================================

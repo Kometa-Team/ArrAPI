@@ -6,7 +6,7 @@ ArrAPI
     :alt: Build Testing
 
 .. image:: https://img.shields.io/readthedocs/arrapi?style=plastic
-    :target: https://arrapi.readthedocs.io/en/latest/?badge=latest
+    :target: https://arrapi.metamanager.wiki
     :alt: Read the Docs
 
 .. image:: https://img.shields.io/github/v/release/meisnate12/ArrAPI?style=plastic
@@ -43,7 +43,7 @@ Installation & Documentation
 
 Documentation_ can be found at Read the Docs.
 
-.. _Documentation: http://arrapi.readthedocs.io/en/latest/
+.. _Documentation: https://arrapi.metamanager.wiki
 
 Connecting to Sonarr
 ==========================================================
@@ -295,73 +295,73 @@ Hyperlinks
 * Theres no Docs for Sonarr v3 Yet.
 
 .. |SonarrAPI| replace:: ``SonarrAPI``
-.. _SonarrAPI: https://arrapi.readthedocs.io/en/latest/sonarr.html#module-arrapi.sonarr
+.. _SonarrAPI: https://arrapi.metamanager.wiki/en/latest/sonarr.html#module-arrapi.sonarr
 
 .. |Series| replace:: ``Series``
-.. _Series: https://arrapi.readthedocs.io/en/latest/objs.html#series
+.. _Series: https://arrapi.metamanager.wiki/en/latest/objs.html#series
 
 .. |get_series| replace:: ``get_series``
-.. _get_series: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.get_series
+.. _get_series: https://arrapi.metamanager.wiki/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.get_series
 
 .. |search_series| replace:: ``search_series``
-.. _search_series: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.search_series
+.. _search_series: https://arrapi.metamanager.wiki/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.search_series
 
 .. |all_series| replace:: ``all_series``
-.. _all_series: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.all_series
+.. _all_series: https://arrapi.metamanager.wiki/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.all_series
 
 .. |sonarr_add| replace:: ``add``
-.. _sonarr_add: https://arrapi.readthedocs.io/en/latest/objs.html#arrapi.objs.Series.add
+.. _sonarr_add: https://arrapi.metamanager.wiki/en/latest/objs.html#arrapi.objs.Series.add
 
 .. |sonarr_edit| replace:: ``edit``
-.. _sonarr_edit: https://arrapi.readthedocs.io/en/latest/objs.html#arrapi.objs.Series.edit
+.. _sonarr_edit: https://arrapi.metamanager.wiki/en/latest/objs.html#arrapi.objs.Series.edit
 
 .. |sonarr_delete| replace:: ``delete``
-.. _sonarr_delete: https://arrapi.readthedocs.io/en/latest/objs.html#arrapi.objs.Series.delete
+.. _sonarr_delete: https://arrapi.metamanager.wiki/en/latest/objs.html#arrapi.objs.Series.delete
 
 .. |add_multiple_series| replace:: ``add_multiple_series``
-.. _add_multiple_series: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.add_multiple_series
+.. _add_multiple_series: https://arrapi.metamanager.wiki/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.add_multiple_series
 
 .. |edit_multiple_series| replace:: ``edit_multiple_series``
-.. _edit_multiple_series: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.edit_multiple_series
+.. _edit_multiple_series: https://arrapi.metamanager.wiki/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.edit_multiple_series
 
 .. |delete_multiple_series| replace:: ``delete_multiple_series``
-.. _delete_multiple_series: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.delete_multiple_series
+.. _delete_multiple_series: https://arrapi.metamanager.wiki/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.delete_multiple_series
 
 .. |sonarr_exclusions| replace:: ``sonarr_exclusions``
-.. _sonarr_exclusions: https://arrapi.readthedocs.io/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.respect_list_exclusions_when_adding
+.. _sonarr_exclusions: https://arrapi.metamanager.wiki/en/latest/sonarr.html#arrapi.sonarr.SonarrAPI.respect_list_exclusions_when_adding
 
 .. |RadarrAPI| replace:: ``RadarrAPI``
-.. _RadarrAPI: https://arrapi.readthedocs.io/en/latest/radarr.html#module-arrapi.radarr
+.. _RadarrAPI: https://arrapi.metamanager.wiki/en/latest/radarr.html#module-arrapi.radarr
 
 .. |Movie| replace:: ``Movie``
-.. _Movie: https://arrapi.readthedocs.io/en/latest/objs.html#movie
+.. _Movie: https://arrapi.metamanager.wiki/en/latest/objs.html#movie
 
 .. |get_movie| replace:: ``get_movie``
-.. _get_movie: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.get_movie
+.. _get_movie: https://arrapi.metamanager.wiki/en/latest/radarr.html#arrapi.radarr.RadarrAPI.get_movie
 
 .. |search_movies| replace:: ``search_movies``
-.. _search_movies: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.search_movies
+.. _search_movies: https://arrapi.metamanager.wiki/en/latest/radarr.html#arrapi.radarr.RadarrAPI.search_movies
 
 .. |all_movies| replace:: ``all_movies``
-.. _all_movies: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.all_movies
+.. _all_movies: https://arrapi.metamanager.wiki/en/latest/radarr.html#arrapi.radarr.RadarrAPI.all_movies
 
 .. |radarr_add| replace:: ``add``
-.. _radarr_add: https://arrapi.readthedocs.io/en/latest/objs.html#arrapi.objs.Movie.add
+.. _radarr_add: https://arrapi.metamanager.wiki/en/latest/objs.html#arrapi.objs.Movie.add
 
 .. |radarr_edit| replace:: ``edit``
-.. _radarr_edit: https://arrapi.readthedocs.io/en/latest/objs.html#arrapi.objs.Movie.edit
+.. _radarr_edit: https://arrapi.metamanager.wiki/en/latest/objs.html#arrapi.objs.Movie.edit
 
 .. |radarr_delete| replace:: ``delete``
-.. _radarr_delete: https://arrapi.readthedocs.io/en/latest/objs.html#arrapi.objs.Movie.delete
+.. _radarr_delete: https://arrapi.metamanager.wiki/en/latest/objs.html#arrapi.objs.Movie.delete
 
 .. |add_multiple_movies| replace:: ``add_multiple_movies``
-.. _add_multiple_movies: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.add_multiple_movies
+.. _add_multiple_movies: https://arrapi.metamanager.wiki/en/latest/radarr.html#arrapi.radarr.RadarrAPI.add_multiple_movies
 
 .. |edit_multiple_movies| replace:: ``edit_multiple_movies``
-.. _edit_multiple_movies: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.edit_multiple_movies
+.. _edit_multiple_movies: https://arrapi.metamanager.wiki/en/latest/radarr.html#arrapi.radarr.RadarrAPI.edit_multiple_movies
 
 .. |delete_multiple_movies| replace:: ``delete_multiple_movies``
-.. _delete_multiple_movies: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.delete_multiple_movies
+.. _delete_multiple_movies: https://arrapi.metamanager.wiki/en/latest/radarr.html#arrapi.radarr.RadarrAPI.delete_multiple_movies
 
 .. |radarr_exclusions| replace:: ``radarr_exclusions``
-.. _radarr_exclusions: https://arrapi.readthedocs.io/en/latest/radarr.html#arrapi.radarr.RadarrAPI.respect_list_exclusions_when_adding
+.. _radarr_exclusions: https://arrapi.metamanager.wiki/en/latest/radarr.html#arrapi.radarr.RadarrAPI.respect_list_exclusions_when_adding

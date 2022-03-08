@@ -30,7 +30,7 @@ setup(
         "requests"
     ],
     project_urls={
-        "Documentation": "https://arrapi.readthedocs.io/en/latest/",
+        "Documentation": "https://arrapi.metamanager.wiki",
         "Funding": "https://github.com/sponsors/meisnate12",
         "Source": "https://github.com/meisnate12/ArrAPI",
         "Issues": "https://github.com/meisnate12/ArrAPI/issues",

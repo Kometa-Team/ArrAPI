@@ -47,7 +47,7 @@ class RadarrAPI(BaseAPI):
         if path is not None:
             options["path"] = path
         if quality_profile is not None:
-            options["qualityProfileId" if self._raw.v3 else "profileId"] = self._validate_quality_profile(quality_profile)
+            options["qualityProfileId" if self._raw.new_codebase else "profileId"] = self._validate_quality_profile(quality_profile)
         if monitored is not None:
             options["monitored"] = True if monitored else False
         if minimum_availability is not None:

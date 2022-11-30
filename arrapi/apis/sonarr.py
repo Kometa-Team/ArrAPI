@@ -22,14 +22,13 @@ class SonarrAPI(BaseAPI):
         self.monitor_options = ["all", "future", "missing", "existing", "pilot", "firstSeason", "latestSeason", "none"]
         self.series_type_options = ["standard", "daily", "anime"]
 
-    def _validate_add_options(self, root_folder, quality_profile, language_profile, monitor="all",
+    def _validate_add_options(self, root_folder, quality_profile, language_profile=None, monitor="all",
                               season_folder=True, search=True, unmet_search=False, series_type="standard",
                               tags=None):
         """ Validate Add Series options. """
         options = {
             "root_folder": self._validate_root_folder(root_folder),
-            "quality_profile" if self._raw.v3 else "profileId": self._validate_quality_profile(quality_profile),
-            "language_profile": self._validate_language_profile(language_profile),
+            "quality_profile" if self._raw.new_codebase else "profileId": self._validate_quality_profile(quality_profile),
             "monitor": self._validate_monitor(monitor),
             "monitored": monitor != "none",
             "season_folder": True if season_folder else False,
@@ -37,6 +36,10 @@ class SonarrAPI(BaseAPI):
             "unmet_search": True if unmet_search else False,
             "series_type": self._validate_series_type(series_type),
         }
+        if not self._raw.v4:
+            if not language_profile:
+                raise Invalid("Language Profile Required")
+            options["language_profile"] = self._validate_language_profile(language_profile),
         if tags:
             options["tags"] = self._validate_tags(tags)
         return options
@@ -56,8 +59,8 @@ class SonarrAPI(BaseAPI):
         if path is not None:
             options["path"] = path
         if quality_profile is not None:
-            options["qualityProfileId" if self._raw.v3 else "profileId"] = self._validate_quality_profile(quality_profile)
-        if language_profile is not None:
+            options["qualityProfileId" if self._raw.new_codebase else "profileId"] = self._validate_quality_profile(quality_profile)
+        if language_profile is not None and not self._raw.v4:
             options["languageProfileId"] = self._validate_language_profile(language_profile)
         if monitor is not None:
             options["monitor"] = self._validate_monitor(monitor)
@@ -262,7 +265,7 @@ class SonarrAPI(BaseAPI):
     def add_multiple_series(self, ids: List[Union[Series, int, Tuple[Union[Series, int], str]]],
                             root_folder: Union[str, int, RootFolder],
                             quality_profile: Union[str, int, QualityProfile],
-                            language_profile: Union[str, int, LanguageProfile],
+                            language_profile: Optional[Union[str, int, LanguageProfile]] = None,
                             monitor: str = "all",
                             season_folder: bool = True,
                             search: bool = True,
@@ -281,7 +284,7 @@ class SonarrAPI(BaseAPI):
                 ids (List[Union[Series, int, Tuple[Union[Series, int], str]]]): List of TVDB IDs or Series lookups to add.
                 root_folder (Union[str, int, RootFolder]): Root Folder for the Series.
                 quality_profile (Union[str, int, QualityProfile]): Quality Profile for the Series.
-                language_profile (Union[str, int, LanguageProfile]): Language Profile for the Series.
+                language_profile (Optional[Union[str, int, LanguageProfile]]): Language Profile for the Series. Required for older versions only.
                 monitor (bool): How to monitor the Series. Valid options are ``all``, ``future``, ``missing``, ``existing``, ``pilot``, ``firstSeason``, ``latestSeason``, or ``none``.
                 season_folder (bool): Use Season Folders for the Series.
                 search (bool): Start search for missing episodes of the Series after adding.
@@ -296,9 +299,9 @@ class SonarrAPI(BaseAPI):
             Raises:
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
         """
-        options = self._validate_add_options(root_folder, quality_profile, language_profile, monitor=monitor,
-                                             season_folder=season_folder, search=search, unmet_search=unmet_search,
-                                             series_type=series_type, tags=tags)
+        options = self._validate_add_options(root_folder, quality_profile, language_profile=language_profile,
+                                             monitor=monitor, season_folder=season_folder, search=search,
+                                             unmet_search=unmet_search, series_type=series_type, tags=tags)
         json = []
         series = []
         existing_series = []

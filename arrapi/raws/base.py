@@ -17,6 +17,7 @@ class BaseRawAPI(ABC):
         self.session = Session() if session is None else session
         self.v1 = v1
         self.v3 = True
+        self.v4 = False
         try:
             status = self.get_system_status()
         except NotFound:
@@ -25,7 +26,10 @@ class BaseRawAPI(ABC):
         if "version" not in status or status["version"] is None:
             raise ConnectionFailure(f"Failed to Connect to {self.url}")
         if v1 is False:
-            self.v3 = int(status["version"].split(".")[0]) > 2
+            major = int(status["version"].split(".")[0])
+            self.v3 = major == 3
+            self.v4 = major > 3
+        self.new_codebase = self.v1 or self.v3 or self.v4
 
     def _get(self, path, **kwargs):
         """ process get request. """
@@ -48,7 +52,7 @@ class BaseRawAPI(ABC):
         url_params = {"apikey": f"{self.apikey}"}
         for kwarg in kwargs:
             url_params[kwarg] = kwargs[kwarg]
-        request_url = f"{self.url}/api{'/v1' if self.v1 else '/v3' if self.v3 else ''}/{path}"
+        request_url = f"{self.url}/api{'/v1' if self.v1 else '/v3' if self.v3 or self.v4 else ''}/{path}"
         if json is not None:
             logger.debug(f"Request JSON {json}")
         try:
@@ -87,7 +91,7 @@ class BaseRawAPI(ABC):
 
     def get_tag(self, detail=False):
         """ GET /tag and GET /tag/detail """
-        return self._get("tag/detail" if detail and (self.v1 or self.v3) else "tag")
+        return self._get("tag/detail" if detail and self.new_codebase else "tag")
 
     def post_tag(self, label):
         """ POST /tag """
@@ -95,7 +99,7 @@ class BaseRawAPI(ABC):
 
     def get_tag_id(self, tag_id, detail=False):
         """ GET /tag/{id} and GET /tag/detail/{id} """
-        return self._get(f"tag/detail/{tag_id}" if detail and (self.v1 or self.v3) else f"tag/{tag_id}")
+        return self._get(f"tag/detail/{tag_id}" if detail and self.new_codebase else f"tag/{tag_id}")
 
     def put_tag_id(self, tag_id, label):
         """ PUT /tag/{id} """
@@ -121,11 +125,11 @@ class BaseRawAPI(ABC):
 
     def get_qualityProfile(self):
         """" GET /qualityProfile for v3 and GET /profile for v2 """
-        return self._get("qualityProfile" if self.v1 or self.v3 else "profile")
+        return self._get("qualityProfile" if self.new_codebase else "profile")
 
     def get_qualityProfileId(self, qualityProfileId):
         """" GET /qualityProfile/qualityProfileId for v3 and GET /profile/qualityProfileId for v2 """
-        return self._get(f"qualityProfile/{qualityProfileId}" if self.v1 or self.v3 else f"profile/{qualityProfileId}")
+        return self._get(f"qualityProfile/{qualityProfileId}" if self.new_codebase else f"profile/{qualityProfileId}")
 
     def get_rootFolder(self):
         """ GET /rootFolder """

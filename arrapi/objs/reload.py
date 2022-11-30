@@ -288,7 +288,7 @@ class Movie(ReloadObj):
         self.rating_value = self._parse(attrs=["rating", "value"], value_type="float")
         self.collection = self._parse(attrs="collection", value_type="collection")
         self.id = self._parse(attrs="id", value_type="int", default_is_none=True)
-        if self._raw.v3:
+        if self._raw.new_codebase:
             self.originalTitle = self._parse(attrs="originalTitle")
             self.digitalRelease = self._parse(attrs="digitalRelease", value_type="date")
             self.qualityProfileId = self._parse(attrs="qualityProfileId", value_type="int")
@@ -325,7 +325,7 @@ class Movie(ReloadObj):
         else:
             self._data["rootFolderPath"] = options["root_folder"]
         self._data["rootFolderPath"] = options["root_folder"]
-        self._data["qualityProfileId" if self._raw.v3 else "profileId"] = options["quality_profile"]
+        self._data["qualityProfileId" if self._raw.new_codebase else "profileId"] = options["quality_profile"]
         self._data["minimumAvailability"] = options["minimum_availability"]
         self._data["addOptions"] = {"searchForMovie": options["search"]}
         if "tags" in options:
@@ -527,7 +527,7 @@ class Series(ReloadObj):
         self.id = self._parse(attrs="id", value_type="int", default_is_none=True)
         self.seasons = self._parse(attrs="seasons", value_type="season", is_list=True)
 
-        if self._raw.v3:
+        if self._raw.new_codebase:
             self.ended = self._parse(attrs="ended", value_type="bool")
             self.rootFolderPath = self._parse(attrs="rootFolderPath")
             self.qualityProfileId = self._parse(attrs="qualityProfileId", value_type="int")
@@ -573,7 +573,7 @@ class Series(ReloadObj):
         else:
             self._data["rootFolderPath"] = options["root_folder"]
         self._data["monitored"] = options["monitored"]
-        self._data["qualityProfileId" if self._raw.v3 else "profileId"] = options["quality_profile"]
+        self._data["qualityProfileId" if self._raw.new_codebase else "profileId"] = options["quality_profile"]
         self._data["languageProfileId"] = options["language_profile"]
         self._data["seriesType"] = options["series_type"]
         self._data["seasonFolder"] = options["season_folder"]
@@ -589,7 +589,7 @@ class Series(ReloadObj):
     def add(self,
             root_folder: Union[str, int, "RootFolder"],
             quality_profile: Union[str, int, "QualityProfile"],
-            language_profile: Union[str, int, "LanguageProfile"],
+            language_profile: Optional[Union[str, int, "LanguageProfile"]] = None,
             monitor: str = "all",
             season_folder: bool = True,
             search: bool = True,
@@ -601,7 +601,7 @@ class Series(ReloadObj):
             Parameters:
                 root_folder (Union[str, int, RootFolder]): Root Folder for the Series.
                 quality_profile (Union[str, int, QualityProfile]): Quality Profile for the Series.
-                language_profile (Union[str, int, LanguageProfile]): Language Profile for the Series.
+                language_profile (Optional[Union[str, int, LanguageProfile]]): Language Profile for the Series. Required for older versions.
                 monitor (bool): How to monitor the Series. Valid options are all, future, missing, existing, pilot, firstSeason, latestSeason, or none.
                 season_folder (bool): Use Season Folders for the Series.
                 search (bool): Start search for missing episodes of the Series after adding.
@@ -618,7 +618,7 @@ class Series(ReloadObj):
         self._load(self._raw.post_series(self._get_add_data(self._arr._validate_add_options(
             root_folder,
             quality_profile,
-            language_profile,
+            language_profile=language_profile,
             monitor=monitor,
             season_folder=season_folder,
             search=search,

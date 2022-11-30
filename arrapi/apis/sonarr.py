@@ -31,9 +31,9 @@ class SonarrAPI(BaseAPI):
             "quality_profile" if self._raw.new_codebase else "profileId": self._validate_quality_profile(quality_profile),
             "monitor": self._validate_monitor(monitor),
             "monitored": monitor != "none",
-            "season_folder": True if season_folder else False,
-            "search": True if search else False,
-            "unmet_search": True if unmet_search else False,
+            "season_folder": True if season_folder is True else False,
+            "search": True if search is True else False,
+            "unmet_search": True if unmet_search is True else False,
             "series_type": self._validate_series_type(series_type),
         }
         if not self._raw.v4:
@@ -53,7 +53,7 @@ class SonarrAPI(BaseAPI):
         if all(v is None for v in variables):
             raise ValueError("Expected either root_folder, path, quality_profile, language_profile, "
                              "monitor, monitored, season_folder, series_type, or tags args")
-        options = {"moveFiles": True if move_files else False}
+        options = {"moveFiles": True if move_files is True else False}
         if root_folder is not None:
             options["rootFolderPath"] = self._validate_root_folder(root_folder)
         if path is not None:
@@ -65,9 +65,9 @@ class SonarrAPI(BaseAPI):
         if monitor is not None:
             options["monitor"] = self._validate_monitor(monitor)
         if monitored is not None:
-            options["monitored"] = True if monitored else False
+            options["monitored"] = True if monitored is True else False
         if season_folder is not None:
-            options["seasonFolder"] = True if season_folder else False
+            options["seasonFolder"] = True if season_folder is True else False
         if series_type is not None:
             options["seriesType"] = self._validate_series_type(series_type)
         if tags is not None:

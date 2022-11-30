@@ -20,6 +20,7 @@ class RadarrAPI(BaseAPI):
         super().__init__(RadarrRawAPI(url, apikey, session=session))
         self.exclusions = []
         self.minimum_availability_options = ["announced", "inCinemas", "released", "preDB"]
+        self.monitor_options = ["movieOnly", "movieAndCollection", "none"]
 
     def _validate_add_options(self, root_folder, quality_profile, monitor=True, search=True,
                               minimum_availability="announced", tags=None):
@@ -27,8 +28,8 @@ class RadarrAPI(BaseAPI):
         options = {
             "root_folder": self._validate_root_folder(root_folder),
             "quality_profile": self._validate_quality_profile(quality_profile),
-            "monitor": True if monitor else False,
-            "search": True if search else False,
+            "monitor": self._validate_monitor(monitor),
+            "search": True if search is True else False,
             "minimum_availability": self._validate_minimum_availability(minimum_availability)
         }
         if tags:
@@ -41,7 +42,7 @@ class RadarrAPI(BaseAPI):
         if all(v is None for v in [root_folder, path, quality_profile, monitored, minimum_availability, tags]):
             raise ValueError("Expected either root_folder, path, quality_profile, "
                              "monitored, minimum_availability, or tags args")
-        options = {"moveFiles": True if move_files else False}
+        options = {"moveFiles": True if move_files is True else False}
         if root_folder is not None:
             options["rootFolderPath"] = self._validate_root_folder(root_folder)
         if path is not None:
@@ -49,7 +50,7 @@ class RadarrAPI(BaseAPI):
         if quality_profile is not None:
             options["qualityProfileId" if self._raw.new_codebase else "profileId"] = self._validate_quality_profile(quality_profile)
         if monitored is not None:
-            options["monitored"] = True if monitored else False
+            options["monitored"] = self._validate_monitor(monitored, name="Monitored")
         if minimum_availability is not None:
             options["minimumAvailability"] = self._validate_minimum_availability(minimum_availability)
         if tags is not None:
@@ -63,6 +64,15 @@ class RadarrAPI(BaseAPI):
     def _validate_minimum_availability(self, minimum_availability):
         """ Validate Minimum Availability options. """
         return self._validate_options("Minimum Availability", minimum_availability, self.minimum_availability_options)
+
+    def _validate_monitor(self, monitor, name="Monitor"):
+        """ Validate Monitor options. """
+        if self._raw.v4:
+            if isinstance(monitor, bool):
+                return monitor
+            return self._validate_options(name, monitor, self.monitor_options)
+        else:
+            return True if monitor is True else False
 
     def _validate_ids(self, ids):
         """ Validate IDs. """
@@ -135,7 +145,7 @@ class RadarrAPI(BaseAPI):
             movie_id: Optional[int] = None,
             tmdb_id: Optional[int] = None,
             imdb_id: Optional[str] = None,
-            monitor: bool = True,
+            monitor: Union[bool, str] = True,
             search: bool = True,
             minimum_availability: str = "announced",
             tags: Optional[List[Union[str, int, Tag]]] = None
@@ -148,7 +158,7 @@ class RadarrAPI(BaseAPI):
                 movie_id (Optional[int]): Search by Radarr Movie ID.
                 tmdb_id (Optional[int]): Search by TMDb ID.
                 imdb_id (Optional[int]): Search by IMDb ID.
-                monitor (bool): Monitor the Movie.
+                monitor (Union[bool, str]): Monitor the Movie. Valid V4 Options are movieOnly, movieAndCollection, none.
                 search (bool): Search for the Movie after adding.
                 minimum_availability (str): Minimum Availability for the Movie. Valid options are announced, inCinemas, released, or preDB.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added to the Movie.
@@ -176,7 +186,7 @@ class RadarrAPI(BaseAPI):
             path: Optional[str] = None,
             move_files: bool = False,
             quality_profile: Optional[Union[str, int, "QualityProfile"]] = None,
-            monitored: Optional[bool] = None,
+            monitored: Optional[Union[bool, str]] = None,
             minimum_availability: Optional[str] = None,
             tags: Optional[List[Union[str, int, Tag]]] = None,
             apply_tags: str = "add"
@@ -190,7 +200,7 @@ class RadarrAPI(BaseAPI):
                 path (Optional[str]): Path to change the Movie to.
                 move_files (bool): When changing the path do you want to move the files to the new path.
                 quality_profile (Optional[Union[str, int, QualityProfile]]): Quality Profile to change the Movie to.
-                monitored (Optional[bool]): Monitor the Movie.
+                monitored (Optional[Union[bool, str]]): Monitor the Movie. Valid V4 Options are movieOnly, movieAndCollection, none.
                 minimum_availability (Optional[str]): Minimum Availability to change the Movie to. Valid options are announced, inCinemas, released, or preDB.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added, replaced, or removed from the Movie.
                 apply_tags (str): How you want to edit the Tags. Valid options are add, replace, or remove.
@@ -236,7 +246,7 @@ class RadarrAPI(BaseAPI):
     def add_multiple_movies(self, ids: List[Union[int, str, Movie, Tuple[Union[int, str, Movie], str]]],
                             root_folder: Union[str, int, RootFolder],
                             quality_profile: Union[str, int, QualityProfile],
-                            monitor: bool = True,
+                            monitor: Union[bool, str] = True,
                             search: bool = True,
                             minimum_availability: str = "announced",
                             tags: Optional[List[Union[str, int, Tag]]] = None,
@@ -252,7 +262,7 @@ class RadarrAPI(BaseAPI):
                 ids (List[Union[int, str, Movie, Tuple[Union[int, str, Movie], str]]]): List of TMDB IDs, IMDb IDs, or Movie lookups to add.
                 root_folder (Union[str, int, RootFolder]): Root Folder for the Movies.
                 quality_profile (Union[str, int, QualityProfile]): Quality Profile for the Movies.
-                monitor (bool): Monitor the Movies.
+                monitor (Union[bool, str]): Monitor the Movies. Valid V4 Options are movieOnly, movieAndCollection, none.
                 search (bool): Search for the Movies after adding.
                 minimum_availability (str): Minimum Availability for the Movies. Valid options are announced, inCinemas, released, or preDB.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added to the Movies.
@@ -306,7 +316,7 @@ class RadarrAPI(BaseAPI):
                              root_folder: Optional[Union[str, int, RootFolder]] = None,
                              move_files: bool = False,
                              quality_profile: Optional[Union[str, int, QualityProfile]] = None,
-                             monitored: Optional[bool] = None,
+                             monitored: Optional[Union[bool, str]] = None,
                              minimum_availability: Optional[str] = None,
                              tags: Optional[List[Union[str, int, Tag]]] = None,
                              apply_tags: str = "add",
@@ -319,7 +329,7 @@ class RadarrAPI(BaseAPI):
                 root_folder (Union[str, int, RootFolder]): Root Folder to change the Movie to.
                 move_files (bool): When changing the root folder do you want to move the files to the new path.
                 quality_profile (Optional[Union[str, int, QualityProfile]]): Quality Profile to change the Movie to.
-                monitored (Optional[bool]): Monitor the Movie.
+                monitored (Optional[Union[bool, str]]): Monitor the Movie. Valid V4 Options are movieOnly, movieAndCollection, none.
                 minimum_availability (Optional[str]): Minimum Availability to change the Movie to. Valid options are announced, inCinemas, released, or preDB.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added, replaced, or removed from the Movie.
                 apply_tags (str): How you want to edit the Tags. Valid options are add, replace, or remove.

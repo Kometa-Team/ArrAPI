@@ -2,6 +2,7 @@ from requests import Session
 from typing import Optional, Union, List, Tuple
 from arrapi import LanguageProfile, RootFolder, QualityProfile, Series, Tag, NotFound, Invalid, Exists
 from .base import BaseAPI
+from ..exceptions import Excluded
 from ..objs.simple import SonarrExclusion
 from ..raws.sonarr import SonarrRawAPI
 
@@ -180,6 +181,7 @@ class SonarrAPI(BaseAPI):
                 :class:`~arrapi.exceptions.NotFound`: When there's no series with that ID.
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
                 :class:`~arrapi.exceptions.Exists`: When the Series already Exists in Sonarr.
+                :class:`~arrapi.exceptions.Excluded`: When the Series Exists in the Exclusion List.
         """
         series = self.get_series(series_id=series_id, tvdb_id=tvdb_id)
         series.add(root_folder, quality_profile, language_profile, monitor=monitor, season_folder=season_folder,
@@ -221,7 +223,7 @@ class SonarrAPI(BaseAPI):
                 :class:`~arrapi.objs.reload.Series`: Series for the ID given.
 
             Raises:
-                :class:`ValueError`: When no ID is given or when theres no options given.
+                :class:`ValueError`: When no ID is given or when there's no options given.
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
                 :class:`~arrapi.exceptions.NotFound`: When there's no series with that ID or when the Series hasn't been added to Sonarr.
         """
@@ -268,7 +270,7 @@ class SonarrAPI(BaseAPI):
                             series_type: str = "standard",
                             tags: Optional[List[Union[str, int, Tag]]] = None,
                             per_request: int = None
-                            ) -> Tuple[List[Series], List[Series], List[Union[int, Series]]]:
+                            ) -> Tuple[List[Series], List[Series], List[Union[int, Series]], List[int]]:
         """ Adds multiple Series to Sonarr in a single call by their TVDb IDs.
 
             You can specify the path for each TVDb ID using a tuple in the list instead of just the ID ex. ``(121361, "/media/Game of Thrones/")``
@@ -289,7 +291,7 @@ class SonarrAPI(BaseAPI):
                 per_request (int): Number of Series to add per request.
 
             Returns:
-                Tuple[List[:class:`~arrapi.objs.reload.Series`], List[:class:`~arrapi.objs.reload.Series`], List[Union[int, Series]]]: List of Series that were able to be added, List of Series already in Sonarr, List of Series that could not be found or were excluded.
+                Tuple[List[:class:`~arrapi.objs.reload.Series`], List[:class:`~arrapi.objs.reload.Series`], List[Union[int, Series]], List[int]]: List of Series that were able to be added, List of Series already in Sonarr, List of Series that could not be found, List of Movies that were excluded.
 
             Raises:
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
@@ -301,6 +303,7 @@ class SonarrAPI(BaseAPI):
         series = []
         existing_series = []
         invalid_ids = []
+        excluded_ids = []
         used_ids = []
         for input_item in ids:
             path = input_item[1] if isinstance(input_item, tuple) else None
@@ -310,10 +313,10 @@ class SonarrAPI(BaseAPI):
                     show = item
                 else:
                     if int(item) in used_ids or (self.exclusions and int(item) in self.exclusions):
-                        raise NotFound
+                        raise Excluded(int(item))
                     show = self.get_series(tvdb_id=item)
                 if show.tvdbId in used_ids or (self.exclusions and show.tvdbId in self.exclusions):
-                    raise NotFound
+                    raise Excluded(show.tvdbId)
                 used_ids.append(show.tvdbId)
                 try:
                     json.append(show._get_add_data(options, path=path))
@@ -321,12 +324,14 @@ class SonarrAPI(BaseAPI):
                     existing_series.append(show)
             except NotFound:
                 invalid_ids.append(input_item)
+            except Excluded as e:
+                excluded_ids.append(int(str(e)))
         if len(json) > 0:
             if per_request is None:
                 per_request = len(json)
             for i in range(0, len(json), per_request):
                 series.extend([Series(self, data=s) for s in self._raw.post_series_import(json[i:i+per_request])])
-        return series, existing_series, invalid_ids
+        return series, existing_series, invalid_ids, excluded_ids
 
     def edit_multiple_series(self, ids: List[Union[Series, int]],
                              root_folder: Optional[Union[str, int, RootFolder]] = None,

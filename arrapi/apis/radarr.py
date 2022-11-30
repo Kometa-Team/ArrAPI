@@ -2,6 +2,7 @@ from requests import Session
 from typing import Optional, Union, List, Tuple
 from arrapi import RootFolder, QualityProfile, Movie, Tag, NotFound, Invalid, Exists
 from .base import BaseAPI
+from ..exceptions import Excluded
 from ..objs.simple import RadarrExclusion
 from ..raws.radarr import RadarrRawAPI
 
@@ -160,6 +161,7 @@ class RadarrAPI(BaseAPI):
                 :class:`~arrapi.exceptions.NotFound`: When there's no movie with that ID.
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
                 :class:`~arrapi.exceptions.Exists`: When the Movie already Exists in Radarr.
+                :class:`~arrapi.exceptions.Excluded`: When the Movie Exists in the Exclusion List.
         """
         movie = self.get_movie(movie_id=movie_id, tmdb_id=tmdb_id, imdb_id=imdb_id)
         movie.add(root_folder, quality_profile, monitor=monitor, search=search,
@@ -194,7 +196,7 @@ class RadarrAPI(BaseAPI):
                 apply_tags (str): How you want to edit the Tags. Valid options are add, replace, or remove.
 
             Raises:
-                :class:`ValueError`: When no ID is given or when theres no options given.
+                :class:`ValueError`: When no ID is given or when there's no options given.
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
                 :class:`~arrapi.exceptions.NotFound`: When there's no movie with that ID or when the Movie hasn't been added to Radarr.
         """
@@ -239,7 +241,7 @@ class RadarrAPI(BaseAPI):
                             minimum_availability: str = "announced",
                             tags: Optional[List[Union[str, int, Tag]]] = None,
                             per_request: int = None
-                            ) -> Tuple[List[Movie], List[Movie], List[Union[int, str, Movie]]]:
+                            ) -> Tuple[List[Movie], List[Movie], List[Union[int, str, Movie]], List[int]]:
         """ Adds multiple Movies to Radarr in a single call by their TMDb IDs.
 
             You can specify the path for each TMDb ID using a tuple in the list instead of just the ID ex. ``(11, "/media/Star Wars (1977)/")``
@@ -257,7 +259,7 @@ class RadarrAPI(BaseAPI):
                 per_request (int): Number of Movies to add per request.
 
             Returns:
-                Tuple[List[:class:`~arrapi.objs.reload.Movie`], List[:class:`~arrapi.objs.reload.Movie`], List[Union[int, str, Movie]]]: List of Movies that were able to be added, List of Movies already in Radarr, List of Movies that could not be found or were excluded.
+                Tuple[List[:class:`~arrapi.objs.reload.Movie`], List[:class:`~arrapi.objs.reload.Movie`], List[Union[int, str, Movie]], List[int]]: List of Movies that were able to be added, List of Movies already in Radarr, List of Movies that could not be found, List of Movies that were excluded.
 
             Raises:
                 :class:`~arrapi.exceptions.Invalid`: When one of the options given is invalid.
@@ -268,6 +270,7 @@ class RadarrAPI(BaseAPI):
         movies = []
         existing_movies = []
         invalid_ids = []
+        excluded_ids = []
         used_ids = []
         for input_item in ids:
             path = input_item[1] if isinstance(input_item, tuple) else None
@@ -279,10 +282,10 @@ class RadarrAPI(BaseAPI):
                     movie = self.get_movie(imdb_id=item)
                 else:
                     if int(item) in used_ids or (self.exclusions and int(item) in self.exclusions):
-                        raise NotFound
+                        raise Excluded(int(item))
                     movie = self.get_movie(tmdb_id=item)
                 if movie.tmdbId in used_ids or (self.exclusions and movie.tmdbId in self.exclusions):
-                    raise NotFound
+                    raise Excluded(movie.tmdbId)
                 used_ids.append(movie.tmdbId)
                 try:
                     json.append(movie._get_add_data(options, path=path))
@@ -290,12 +293,14 @@ class RadarrAPI(BaseAPI):
                     existing_movies.append(movie)
             except NotFound:
                 invalid_ids.append(input_item)
+            except Excluded as e:
+                excluded_ids.append(int(str(e)))
         if len(json) > 0:
             if per_request is None:
                 per_request = len(json)
             for i in range(0, len(json), per_request):
                 movies.extend([Movie(self, data=m) for m in self._raw.post_movie_import(json[i:i+per_request])])
-        return movies, existing_movies, invalid_ids
+        return movies, existing_movies, invalid_ids, excluded_ids
 
     def edit_multiple_movies(self, ids: List[Union[int, str, Movie]],
                              root_folder: Optional[Union[str, int, RootFolder]] = None,

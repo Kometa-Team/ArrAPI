@@ -574,7 +574,8 @@ class Series(ReloadObj):
             self._data["rootFolderPath"] = options["root_folder"]
         self._data["monitored"] = options["monitored"]
         self._data["qualityProfileId" if self._raw.new_codebase else "profileId"] = options["quality_profile"]
-        self._data["languageProfileId"] = options["language_profile"]
+        if "language_profile" in options:
+            self._data["languageProfileId"] = options["language_profile"]
         self._data["seriesType"] = options["series_type"]
         self._data["seasonFolder"] = options["season_folder"]
         self._data["addOptions"] = {

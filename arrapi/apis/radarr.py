@@ -246,7 +246,7 @@ class RadarrAPI(BaseAPI):
     def add_multiple_movies(self, ids: List[Union[int, str, Movie, Tuple[Union[int, str, Movie], str]]],
                             root_folder: Union[str, int, RootFolder],
                             quality_profile: Union[str, int, QualityProfile],
-                            monitor: Union[bool, str] = True,
+                            monitor: bool = True,
                             search: bool = True,
                             minimum_availability: str = "announced",
                             tags: Optional[List[Union[str, int, Tag]]] = None,
@@ -262,7 +262,7 @@ class RadarrAPI(BaseAPI):
                 ids (List[Union[int, str, Movie, Tuple[Union[int, str, Movie], str]]]): List of TMDB IDs, IMDb IDs, or Movie lookups to add.
                 root_folder (Union[str, int, RootFolder]): Root Folder for the Movies.
                 quality_profile (Union[str, int, QualityProfile]): Quality Profile for the Movies.
-                monitor (Union[bool, str]): Monitor the Movies. Valid V4 Options are movieOnly, movieAndCollection, none.
+                monitor (bool): Monitor the Movies.
                 search (bool): Search for the Movies after adding.
                 minimum_availability (str): Minimum Availability for the Movies. Valid options are announced, inCinemas, released, or preDB.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added to the Movies.
@@ -316,7 +316,7 @@ class RadarrAPI(BaseAPI):
                              root_folder: Optional[Union[str, int, RootFolder]] = None,
                              move_files: bool = False,
                              quality_profile: Optional[Union[str, int, QualityProfile]] = None,
-                             monitored: Optional[Union[bool, str]] = None,
+                             monitored: Optional[bool] = None,
                              minimum_availability: Optional[str] = None,
                              tags: Optional[List[Union[str, int, Tag]]] = None,
                              apply_tags: str = "add",
@@ -329,7 +329,7 @@ class RadarrAPI(BaseAPI):
                 root_folder (Union[str, int, RootFolder]): Root Folder to change the Movie to.
                 move_files (bool): When changing the root folder do you want to move the files to the new path.
                 quality_profile (Optional[Union[str, int, QualityProfile]]): Quality Profile to change the Movie to.
-                monitored (Optional[Union[bool, str]]): Monitor the Movie. Valid V4 Options are movieOnly, movieAndCollection, none.
+                monitored (Optional[bool]): Monitor the Movie.
                 minimum_availability (Optional[str]): Minimum Availability to change the Movie to. Valid options are announced, inCinemas, released, or preDB.
                 tags (Optional[List[Union[str, int, Tag]]]): Tags to be added, replaced, or removed from the Movie.
                 apply_tags (str): How you want to edit the Tags. Valid options are add, replace, or remove.

@@ -39,7 +39,7 @@ class SonarrAPI(BaseAPI):
         if not self._raw.v4:
             if not language_profile:
                 raise Invalid("Language Profile Required")
-            options["language_profile"] = self._validate_language_profile(language_profile),
+            options["language_profile"] = self._validate_language_profile(language_profile)
         if tags:
             options["tags"] = self._validate_tags(tags)
         return options

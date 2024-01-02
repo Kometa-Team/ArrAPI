@@ -24,7 +24,7 @@ setup(
     author_email=arrapi.__email__,
     license=arrapi.__license__,
     packages=find_packages(),
-    python_requires=">=3.6",
+    python_requires=">=3.8",
     keywords=["arrapi", "sonarr", "radarr", "arr", "wrapper", "api"],
     install_requires=[
         "requests"
@@ -40,9 +40,10 @@ setup(
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ]
 )

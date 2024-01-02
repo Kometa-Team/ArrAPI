@@ -291,8 +291,7 @@ Hyperlinks
 ----------------------------------------------------------
 
 * `Radarr v3 API Docs <https://radarr.video/docs/api>`_
-* `Sonarr API Docs <https://github.com/Sonarr/Sonarr/wiki/API>`_
-* Theres no Docs for Sonarr v3 Yet.
+* `Sonarr v3 API Docs <https://sonarr.tv/docs/api/>`_
 
 .. |SonarrAPI| replace:: ``SonarrAPI``
 .. _SonarrAPI: https://arrapi.metamanager.wiki/en/latest/sonarr.html#module-arrapi.sonarr

@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: Documentaion
-    url: https://arrapi.metamanager.wiki
+    url: https://arrapi.kometa.wiki
     about: Please check the Documentaion to see if your question has already been answered.
   - name: Discord
-    url: https://discord.gg/NfH6mGFuAB
-    about: Please use the Plex Meta Manager Discord to ask for support.
+    url: https://kometa.wiki/en/latest/discord/
+    about: Please use the Kometa Discord to ask for support.
   - name: Discussions
-    url: https://github.com/meisnate12/ArrAPI/discussions
+    url: https://github.com/Kometa-Team/ArrAPI/discussions
     about: Please use Discussions to ask for support.

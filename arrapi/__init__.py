@@ -17,8 +17,8 @@ __credits__ = "meisnate12"
 __package_name__ = "arrapi"
 __project_name__ = "ArrAPI"
 __description__ = "Python wrapper for Radarr and Sonarr APIs:"
-__url__ = "https://github.com/meisnate12/ArrAPI"
-__email__ = 'meisnate12@gmail.com'
+__url__ = "https://github.com/Kometa-Team/ArrAPI"
+__email__ = "kometateam@proton.me"
 __license__ = 'MIT License'
 __all__ = [
     "RadarrAPI",

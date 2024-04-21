@@ -30,10 +30,10 @@ setup(
         "requests"
     ],
     project_urls={
-        "Documentation": "https://arrapi.metamanager.wiki",
+        "Documentation": "https://arrapi.kometa.wiki",
         "Funding": "https://github.com/sponsors/meisnate12",
-        "Source": "https://github.com/meisnate12/ArrAPI",
-        "Issues": "https://github.com/meisnate12/ArrAPI/issues",
+        "Source": "https://github.com/Kometa-Team/ArrAPI",
+        "Issues": "https://github.com/Kometa-Team/ArrAPI/issues",
     },
     classifiers=[
         "Development Status :: 5 - Production/Stable",

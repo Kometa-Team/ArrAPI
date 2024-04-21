@@ -41,7 +41,7 @@ jobs:
           webhook_id: ${{ secrets.BUILD_WEBHOOK_ID }}
           webhook_token: ${{ secrets.BUILD_WEBHOOK_TOKEN }}
           message: <@&1079153184007790652>
-          title: "${{ secrets.REPO_NAME }}-Copyright: **Failure**"
+          title: "${{ secrets.REPO_NAME }}: **Copyright Update Failed**"
           color: 14879811
           url: https://github.com/Kometa-Team/${{ secrets.REPO_NAME }}/actions/runs/${{ github.run_id }}
           username: Kobota

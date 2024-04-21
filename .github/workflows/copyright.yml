@@ -1,4 +1,4 @@
-name: Update-Copyright-Year
+name: Update Copyright Year
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  Update-Copyright-Year:
+  update:
     runs-on: ubuntu-latest
     steps:
 

@@ -2,16 +2,16 @@
 Welcome to ArrAPI's documentation!
 ==========================================================
 
-.. image:: https://img.shields.io/travis/com/meisnate12/ArrAPI?style=plastic
-    :target: https://app.travis-ci.com/meisnate12/ArrAPI
+.. image:: https://img.shields.io/travis/com/Kometa-Team/ArrAPI?style=plastic
+    :target: https://app.travis-ci.com/Kometa-Team/ArrAPI
     :alt: Build Testing
 
 .. image:: https://img.shields.io/readthedocs/arrapi?style=plastic
-    :target: https://arrapi.metamanager.wiki
+    :target: https://arrapi.kometa.wiki
     :alt: Read the Docs
 
-.. image:: https://img.shields.io/github/v/release/meisnate12/ArrAPI?style=plastic
-    :target: https://github.com/meisnate12/ArrAPI/releases
+.. image:: https://img.shields.io/github/v/release/Kometa-Team/ArrAPI?style=plastic
+    :target: https://github.com/Kometa-Team/ArrAPI/releases
     :alt: GitHub release (latest by date)
 
 .. image:: https://img.shields.io/pypi/v/ArrAPI?style=plastic
@@ -22,8 +22,8 @@ Welcome to ArrAPI's documentation!
     :target: https://pypi.org/project/arrapi/
     :alt: Downloads
 
-.. image:: https://img.shields.io/github/commits-since/meisnate12/ArrAPI/latest?style=plastic
-    :target: https://github.com/meisnate12/ArrAPI/commits/master
+.. image:: https://img.shields.io/github/commits-since/Kometa-Team/ArrAPI/latest?style=plastic
+    :target: https://github.com/Kometa-Team/ArrAPI/commits/master
     :alt: GitHub commits since latest release (by date) for a branch
 
 .. image:: https://img.shields.io/badge/-Sponsor_or_Donate-blueviolet?style=plastic
@@ -44,7 +44,7 @@ Installation & Documentation
 
 Documentation_ can be found at Read the Docs.
 
-.. _Documentation: https://arrapi.metamanager.wiki
+.. _Documentation: https://arrapi.kometa.wiki
 
 Connecting to Sonarr
 ==========================================================
@@ -299,6 +299,6 @@ Hyperlinks
 
 Usage & Contributions
 ----------------------------------------------------------
-* Source is available on the `Github Project Page <https://github.com/meisnate12/arrapi>`_.
+* Source is available on the `Github Project Page <https://github.com/Kometa-Team/ArrAPI>`_.
 * Contributors to ArrAPI own their own contributions and may distribute that code under
-  the `MIT license <https://github.com/meisnate12/arrapi/blob/master/LICENSE.txt>`_.
+  the `MIT license <https://github.com/Kometa-Team/ArrAPI/blob/master/LICENSE.txt>`_.

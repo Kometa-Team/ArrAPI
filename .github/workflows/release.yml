@@ -39,3 +39,31 @@ jobs:
         run: |
           python setup.py sdist bdist_wheel
           twine upload dist/*
+
+      - name: Discord Success Notification
+        uses: Kometa-Team/discord-notifications@master
+        if: success()
+        with:
+          webhook_id: ${{ secrets.BUILD_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.BUILD_WEBHOOK_TOKEN }}
+          title: "${{ secrets.REPO_NAME }}: **Success**"
+          url: https://github.com/Kometa-Team/Kometa/actions/runs/${{ github.run_id }}
+          username: Kobota
+          avatar_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/develop/.github/logo.png
+          author: PyPI
+          author_icon_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/develop/.github/pypi.svg
+
+      - name: Discord Failure Notification
+        uses: Kometa-Team/discord-notifications@master
+        if: failure()
+        with:
+          webhook_id: ${{ secrets.BUILD_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.BUILD_WEBHOOK_TOKEN }}
+          message: <@&1079153184007790652>
+          title: "${{ secrets.REPO_NAME }}: **Failure**"
+          color: 14879811
+          url: https://github.com/Kometa-Team/${{ secrets.REPO_NAME }}/actions/runs/${{ github.run_id }}
+          username: Kobota
+          avatar_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/nightly/.github/logo.png
+          author: PyPI
+          author_icon_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/develop/.github/pypi.svg

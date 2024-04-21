@@ -1,17 +1,17 @@
 ArrAPI
 ==========================================================
 
+.. image:: https://img.shields.io/github/v/release/Kometa-Team/ArrAPI?style=plastic
+    :target: https://github.com/Kometa-Team/ArrAPI/releases
+    :alt: GitHub release (latest by date)
+
 .. image:: https://img.shields.io/travis/com/Kometa-Team/ArrAPI?style=plastic
     :target: https://app.travis-ci.com/Kometa-Team/ArrAPI
     :alt: Build Testing
 
-.. image:: https://img.shields.io/readthedocs/arrapi?style=plastic
-    :target: https://arrapi.kometa.wiki
-    :alt: Read the Docs
-
-.. image:: https://img.shields.io/github/v/release/Kometa-Team/ArrAPI?style=plastic
-    :target: https://github.com/Kometa-Team/ArrAPI/releases
-    :alt: GitHub release (latest by date)
+.. image:: https://img.shields.io/github/commits-since/Kometa-Team/ArrAPI/latest?style=plastic
+    :target: https://github.com/Kometa-Team/ArrAPI/commits/master
+    :alt: GitHub commits since latest release (by date) for a branch
 
 .. image:: https://img.shields.io/pypi/v/ArrAPI?style=plastic
     :target: https://pypi.org/project/arrapi/
@@ -21,13 +21,27 @@ ArrAPI
     :target: https://pypi.org/project/arrapi/
     :alt: Downloads
 
-.. image:: https://img.shields.io/github/commits-since/Kometa-Team/ArrAPI/latest?style=plastic
-    :target: https://github.com/Kometa-Team/ArrAPI/commits/master
-    :alt: GitHub commits since latest release (by date) for a branch
+|
+
+.. image:: https://img.shields.io/readthedocs/arrapi?style=plastic
+    :target: https://arrapi.kometa.wiki
+    :alt: Wiki
+
+.. image:: https://img.shields.io/discord/822460010649878528?color=%2300bc8c&label=Discord&style=plastic
+    :target: https://kometa.wiki/en/latest/discord/
+    :alt: Discord
+
+.. image:: https://img.shields.io/reddit/subreddit-subscribers/Kometa?color=%2300bc8c&label=r%2FKometa&style=plastic
+    :target: https://www.reddit.com/r/Kometa/
+    :alt: Reddit
+
+.. image:: https://img.shields.io/github/sponsors/meisnate12?color=%238a2be2&style=plastic
+    :target: https://github.com/sponsors/meisnate12
+    :alt: GitHub Sponsors
 
 .. image:: https://img.shields.io/badge/-Sponsor_or_Donate-blueviolet?style=plastic
-    :target: https://github.com/sponsors/meisnate12
-    :alt: GitHub Sponsor
+    :target: https://github.com/sponsors/Kometa-Team
+    :alt: Sponsor or Donate
 
 Overview
 ----------------------------------------------------------

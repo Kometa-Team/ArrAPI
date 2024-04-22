@@ -43,27 +43,25 @@ jobs:
         uses: Kometa-Team/discord-notifications@master
         if: success()
         with:
-          webhook_id: ${{ secrets.BUILD_WEBHOOK_ID }}
-          webhook_token: ${{ secrets.BUILD_WEBHOOK_TOKEN }}
+          webhook_id_token: ${{ secrets.BUILD_WEBHOOK }}
           title: "${{ secrets.REPO_NAME }} ${{ github.event.ref }}: **Build Successful**"
           url: https://github.com/Kometa-Team/${{ secrets.REPO_NAME }}/actions/runs/${{ github.run_id }}
           color: 844716
           username: Kobota
-          avatar_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/develop/.github/logo.png
+          avatar_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/nightly/.github/logo.png
           author: PyPI
-          author_icon_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/develop/.github/pypi.svg
+          author_icon_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/nightly/.github/pypi.svg
 
       - name: Discord Failure Notification
         uses: Kometa-Team/discord-notifications@master
         if: failure()
         with:
-          webhook_id: ${{ secrets.BUILD_WEBHOOK_ID }}
-          webhook_token: ${{ secrets.BUILD_WEBHOOK_TOKEN }}
+          webhook_id_token: ${{ secrets.BUILD_WEBHOOK }}
           message: <@&1079153184007790652>
           title: "${{ secrets.REPO_NAME }} ${{ github.event.ref }}: **Build Failed**"
-          color: 14879811
           url: https://github.com/Kometa-Team/${{ secrets.REPO_NAME }}/actions/runs/${{ github.run_id }}
+          color: 14879811
           username: Kobota
           avatar_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/nightly/.github/logo.png
           author: PyPI
-          author_icon_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/develop/.github/pypi.svg
+          author_icon_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/nightly/.github/pypi.svg

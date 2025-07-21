@@ -1,4 +1,4 @@
-import pkg_resources
+from importlib.metadata import version
 
 from .exceptions import ArrException, ConnectionFailure, Excluded, Exists, Invalid, NotFound, Unauthorized
 from .objs.simple import MetadataProfile, RemotePathMapping, RootFolder, UnmappedFolder, Season
@@ -9,8 +9,8 @@ from .apis.lidarr import LidarrAPI
 from .apis.readarr import ReadarrAPI
 
 try:
-    __version__ = pkg_resources.get_distribution("arrapi").version
-except pkg_resources.DistributionNotFound:
+    __version__ =  version("arrapi")
+except importlib.metadata.PackageNotFoundError::
     __version__ = ""
 __author__ = "Nathan Taggart"
 __credits__ = "meisnate12"

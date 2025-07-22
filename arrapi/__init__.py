@@ -10,7 +10,7 @@ from .apis.readarr import ReadarrAPI
 
 try:
     __version__ = version("arrapi")
-except importlib.metadata.PackageNotFoundError::
+except importlib.metadata.PackageNotFoundError:
     __version__ = ""
 __author__ = "Nathan Taggart"
 __credits__ = "meisnate12"

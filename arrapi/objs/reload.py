@@ -62,6 +62,7 @@ class LanguageProfile(ReloadObj):
     def _full_load(self):
         return self._raw.get_languageProfileId(self.id)
 
+
 class SystemStatus(ReloadObj):
     """ Represents the System Status.
 
@@ -250,7 +251,7 @@ class Movie(ReloadObj):
         self.id = movie_id
         self.tmdbId = tmdb_id
         self.imdbId = imdb_id
-        super().__init__(radarr, data)
+        super().__init__(radarr, data, load=movie_id or tmdb_id or imdb_id)
 
     def _load(self, data):
         super()._load(data)

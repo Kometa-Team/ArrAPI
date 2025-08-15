@@ -1,4 +1,4 @@
-from importlib.metadata import version
+from importlib.metadata import version, PackageNotFoundError
 
 from .exceptions import ArrException, ConnectionFailure, Excluded, Exists, Invalid, NotFound, Unauthorized
 from .objs.simple import MetadataProfile, RemotePathMapping, RootFolder, UnmappedFolder, Season
@@ -10,7 +10,7 @@ from .apis.readarr import ReadarrAPI
 
 try:
     __version__ = version("arrapi")
-except importlib.metadata.PackageNotFoundError:
+except PackageNotFoundError:
     __version__ = ""
 __author__ = "Nathan Taggart"
 __credits__ = "meisnate12"

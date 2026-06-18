@@ -15,7 +15,7 @@ jobs:
         run: echo "year=$(date +'%Y')" >> $GITHUB_OUTPUT
 
       - name: Check Out Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Update Copyright
         run: sed -i -E 's/(Copyright \(c\) ).+( meisnate12)/\1${{ steps.date.outputs.year }}\2/' LICENSE

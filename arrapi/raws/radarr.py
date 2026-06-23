@@ -58,24 +58,17 @@ class RadarrRawAPI(BaseRawAPI):
         return self._get("movie/lookup", **{"term": term})
 
     def get_exclusions(self):
-        """ GET /exclusions/paged """
-        if not self.new_codebase:
-            return self._get("exclusions")
+        """ GET /exclusions """
+        return self._get("exclusions")
 
-        page = 1
-        page_size = 250
-        records = []
-        while True:
-            response = self._get("exclusions/paged", page=page, pageSize=page_size)
-            page_records = response.get("records", [])
-            records.extend(page_records)
-            total_records = response.get("totalRecords")
-            if total_records is not None:
-                if len(records) >= total_records:
-                    return records
-            elif len(page_records) < page_size:
-                return records
-            page += 1
+    def get_exclusions_paged(self, page=1, pageSize=10, sortKey=None, sortDirection=None):
+        """ GET /exclusions/paged """
+        params = {"page": page, "pageSize": pageSize}
+        if sortKey is not None:
+            params["sortKey"] = sortKey
+        if sortDirection is not None:
+            params["sortDirection"] = sortDirection
+        return self._get("exclusions/paged", **params)
 
     def post_exclusions(self, json):
         """ POST /exclusions """

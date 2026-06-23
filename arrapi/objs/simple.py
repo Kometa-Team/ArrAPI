@@ -169,6 +169,26 @@ class RadarrExclusion(SimpleObj):
             year (int): Year of the Excluded Movie.
     """
 
+    @classmethod
+    def all(cls, arr):
+        if not arr._raw.new_codebase:
+            return [cls(arr, data) for data in arr._raw.get_exclusions()]
+
+        page = 1
+        page_size = 250
+        exclusions = []
+        while True:
+            response = arr._raw.get_exclusions_paged(page=page, pageSize=page_size)
+            records = response.get("records", [])
+            exclusions.extend(cls(arr, data) for data in records)
+            total_records = response.get("totalRecords")
+            if total_records is not None:
+                if len(exclusions) >= total_records:
+                    return exclusions
+            elif len(records) < page_size:
+                return exclusions
+            page += 1
+
     def _load(self, data):
         super()._load(data)
         self.tmdbId = self._parse(attrs="tmdbId", value_type="int")

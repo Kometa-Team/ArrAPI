@@ -61,6 +61,15 @@ class RadarrRawAPI(BaseRawAPI):
         """ GET /exclusions """
         return self._get("exclusions")
 
+    def get_exclusions_paged(self, page=1, pageSize=10, sortKey=None, sortDirection=None):
+        """ GET /exclusions/paged """
+        params = {"page": page, "pageSize": pageSize}
+        if sortKey is not None:
+            params["sortKey"] = sortKey
+        if sortDirection is not None:
+            params["sortDirection"] = sortDirection
+        return self._get("exclusions/paged", **params)
+
     def post_exclusions(self, json):
         """ POST /exclusions """
         return self._post("exclusions", json=json)

@@ -61,7 +61,7 @@ class RadarrRawAPI(BaseRawAPI):
         """ GET /exclusions """
         return self._get("exclusions")
 
-    def get_exclusions_paged(self, page=1, pageSize=10, sortKey=None, sortDirection=None):
+    def get_exclusions_paged(self, page=1, pageSize=250, sortKey=None, sortDirection=None):
         """ GET /exclusions/paged """
         params = {"page": page, "pageSize": pageSize}
         if sortKey is not None:

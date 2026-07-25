@@ -84,6 +84,15 @@ class SonarrRawAPI(BaseRawAPI):
         """ GET /importlistexclusion """
         return self._get("importlistexclusion")
 
+    def get_importlistexclusion_paged(self, page=1, pageSize=250, sortKey=None, sortDirection=None):
+        """ GET /importlistexclusion/paged """
+        params = {"page": page, "pageSize": pageSize}
+        if sortKey is not None:
+            params["sortKey"] = sortKey
+        if sortDirection is not None:
+            params["sortDirection"] = sortDirection
+        return self._get("importlistexclusion/paged", **params)
+
     def post_importlistexclusion(self, json):
         """ POST /importlistexclusion """
         return self._post("importlistexclusion", json=json)

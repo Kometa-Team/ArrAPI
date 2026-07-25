@@ -2,6 +2,43 @@ from abc import abstractmethod
 
 from arrapi.objs.base import BaseObj
 
+_DEFAULT_PAGE_SIZE = 250
+
+
+def _paginate(arr, paged_getter, page_size=_DEFAULT_PAGE_SIZE):
+    """ Walk a Sonarr/Radarr ``*/paged`` endpoint until exhausted.
+
+        The endpoint returns a JSON body shaped ``{"records": [...], "totalRecords": N, ...}``.
+        We prefer ``totalRecords`` when the server sends it and fall back to a short-page
+        heuristic (a page smaller than ``page_size`` implies we've reached the end) otherwise.
+
+        Parameters:
+            arr: The API wrapper (used only for logging context; unused here today but
+                kept in the signature so callers pass an unambiguous handle).
+            paged_getter (Callable[[int, int], dict]): Function accepting
+                ``(page, pageSize)`` and returning the raw JSON dict.
+            page_size (int): Page size to request from the server.
+
+        Yields:
+            dict: Each raw record dict, exactly as returned by the server.
+    """
+    page = 1
+    seen = 0
+    while True:
+        response = paged_getter(page=page, pageSize=page_size) or {}
+        records = response.get("records", [])
+        for record in records:
+            yield record
+        seen += len(records)
+        total_records = response.get("totalRecords")
+        if total_records is not None:
+            if seen >= total_records:
+                return
+        elif len(records) < page_size:
+            return
+        page += 1
+
+
 class SimpleObj(BaseObj):
     @abstractmethod
     def _load(self, data):
@@ -169,6 +206,24 @@ class RadarrExclusion(SimpleObj):
             year (int): Year of the Excluded Movie.
     """
 
+    @classmethod
+    def get_all(cls, arr):
+        """ Return every Radarr Import List Exclusion.
+
+            On the modern (v3+) codebase this pages through ``/api/v3/exclusions/paged``
+            because the flat ``/api/v3/exclusions`` endpoint is marked ``[Obsolete]``
+            upstream. On the legacy codebase it falls back to the flat endpoint.
+
+            Parameters:
+                arr (RadarrAPI): The Radarr API wrapper to load exclusions from.
+
+            Returns:
+                List[RadarrExclusion]: Every exclusion currently stored in Radarr.
+        """
+        if not arr._raw.new_codebase:
+            return [cls(arr, data) for data in arr._raw.get_exclusions()]
+        return [cls(arr, data) for data in _paginate(arr, arr._raw.get_exclusions_paged)]
+
     def _load(self, data):
         super()._load(data)
         self.tmdbId = self._parse(attrs="tmdbId", value_type="int")
@@ -183,6 +238,25 @@ class SonarrExclusion(SimpleObj):
             tvdbId (int): TVDb ID of the Excluded Series.
             title (str): Title of the Excluded Series.
     """
+
+    @classmethod
+    def get_all(cls, arr):
+        """ Return every Sonarr Import List Exclusion.
+
+            On the modern (v3+) codebase this pages through
+            ``/api/v3/importlistexclusion/paged`` because the flat endpoint is marked
+            ``[Obsolete]`` upstream. On the legacy codebase it falls back to the flat
+            endpoint.
+
+            Parameters:
+                arr (SonarrAPI): The Sonarr API wrapper to load exclusions from.
+
+            Returns:
+                List[SonarrExclusion]: Every exclusion currently stored in Sonarr.
+        """
+        if not arr._raw.new_codebase:
+            return [cls(arr, data) for data in arr._raw.get_importlistexclusion()]
+        return [cls(arr, data) for data in _paginate(arr, arr._raw.get_importlistexclusion_paged)]
 
     def _load(self, data):
         super()._load(data)

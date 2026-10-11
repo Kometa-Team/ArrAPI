@@ -1,4 +1,4 @@
-import arrapi, os
+import os
 
 from setuptools import setup, find_packages
 
@@ -15,16 +15,16 @@ if os.path.exists("VERSION"):
                 break
 
 setup(
-    name=arrapi.__package_name__,
+    name="arrapi",
     version=__version__,
-    description=arrapi.__description__,
+    description="Python wrapper for Radarr and Sonarr APIs:",
     long_description=long_descr,
-    url=arrapi.__url__,
-    author=arrapi.__author__,
-    author_email=arrapi.__email__,
-    license=arrapi.__license__,
+    url="https://github.com/Kometa-Team/ArrAPI",
+    author="Kometa Team",
+    author_email="kometateam@proton.me",
+    license="MIT License",
     packages=find_packages(),
-    python_requires=">=3.8",
+    python_requires=">=3.10",
     keywords=["arrapi", "sonarr", "radarr", "arr", "wrapper", "api"],
     install_requires=[
         "requests"
@@ -40,8 +40,6 @@ setup(
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",

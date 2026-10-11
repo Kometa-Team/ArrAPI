@@ -13,6 +13,10 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
 """
+@unittest.skipUnless(
+    os.environ.get("SONARR_URL") and os.environ.get("SONARR_APIKEY"),
+    "Set SONARR_URL and SONARR_APIKEY to run live Sonarr tests"
+)
 class SonarrTests(unittest.TestCase):
     sonarr = None
     root = "/config"

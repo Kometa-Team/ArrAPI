@@ -13,6 +13,10 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
 """
+@unittest.skipUnless(
+    os.environ.get("RADARR_URL") and os.environ.get("RADARR_APIKEY"),
+    "Set RADARR_URL and RADARR_APIKEY to run live Radarr tests"
+)
 class RadarrTests(unittest.TestCase):
     radarr = None
     root = "/config"

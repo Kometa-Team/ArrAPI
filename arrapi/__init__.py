@@ -1,7 +1,7 @@
 from importlib.metadata import version, PackageNotFoundError
 
 from .exceptions import ArrException, ConnectionFailure, Excluded, Exists, Invalid, NotFound, Unauthorized
-from .objs.simple import MetadataProfile, RemotePathMapping, RootFolder, UnmappedFolder, Season
+from .objs.simple import Episode, MetadataProfile, Queue, RemotePathMapping, RootFolder, UnmappedFolder, Season
 from .objs.reload import QualityProfile, LanguageProfile, SystemStatus, Tag, Movie, Series
 from .apis.sonarr import SonarrAPI
 from .apis.radarr import RadarrAPI
@@ -26,6 +26,8 @@ __all__ = [
     "QualityProfile",
     "LanguageProfile",
     "MetadataProfile",
+    "Episode",
+    "Queue",
     "RemotePathMapping",
     "RootFolder",
     "UnmappedFolder",

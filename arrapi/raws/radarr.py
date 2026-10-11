@@ -57,9 +57,47 @@ class RadarrRawAPI(BaseRawAPI):
         """ GET /movie/lookup """
         return self._get("movie/lookup", **{"term": term})
 
+    def get_calendar(self, start=None, end=None, unmonitored=False, tags=None):
+        """ GET /calendar """
+        params = {"unmonitored": unmonitored}
+        if start is not None:
+            params["start"] = start
+        if end is not None:
+            params["end"] = end
+        if tags is not None:
+            params["tags"] = tags
+        return self._get("calendar", **params)
+
     def get_exclusions(self):
         """ GET /exclusions """
         return self._get("exclusions")
+
+    def get_exclusions_paged(self, page=1, pageSize=250, sortKey=None, sortDirection=None):
+        """ GET /exclusions/paged """
+        params = {"page": page, "pageSize": pageSize}
+        if sortKey is not None:
+            params["sortKey"] = sortKey
+        if sortDirection is not None:
+            params["sortDirection"] = sortDirection
+        return self._get("exclusions/paged", **params)
+
+    def get_queue(self, page=1, pageSize=250, **params):
+        """ GET /queue """
+        return self._get("queue", page=page, pageSize=pageSize, **params)
+
+    def delete_queue_id(self, queue_id, removeFromClient=True, blocklist=False,
+                        skipRedownload=False, changeCategory=False):
+        """ DELETE /queue/{id} """
+        return self._delete(f"queue/{queue_id}", removeFromClient=removeFromClient,
+                            blocklist=blocklist, skipRedownload=skipRedownload,
+                            changeCategory=changeCategory)
+
+    def delete_queue_bulk(self, queue_ids, removeFromClient=True, blocklist=False,
+                          skipRedownload=False, changeCategory=False):
+        """ DELETE /queue/bulk """
+        return self._delete("queue/bulk", json={"ids": queue_ids}, removeFromClient=removeFromClient,
+                            blocklist=blocklist, skipRedownload=skipRedownload,
+                            changeCategory=changeCategory)
 
     def post_exclusions(self, json):
         """ POST /exclusions """

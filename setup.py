@@ -19,6 +19,7 @@ setup(
     version=__version__,
     description="Python wrapper for Radarr and Sonarr APIs:",
     long_description=long_descr,
+    long_description_content_type="text/x-rst",
     url="https://github.com/Kometa-Team/ArrAPI",
     author="Kometa Team",
     author_email="kometateam@proton.me",

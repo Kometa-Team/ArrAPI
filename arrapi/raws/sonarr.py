@@ -57,6 +57,37 @@ class SonarrRawAPI(BaseRawAPI):
         """ GET /series/lookup """
         return self._get("series/lookup", **{"term": term})
 
+    def get_calendar(self, start=None, end=None, unmonitored=False, tags=None,
+                     includeSeries=False, includeEpisodeFile=False, includeEpisodeImages=False):
+        """ GET /calendar """
+        params = {"unmonitored": unmonitored}
+        if start is not None:
+            params["start"] = start
+        if end is not None:
+            params["end"] = end
+        if tags is not None:
+            params["tags"] = tags
+        if includeSeries:
+            params["includeSeries"] = True
+        if includeEpisodeFile:
+            params["includeEpisodeFile"] = True
+        if includeEpisodeImages:
+            params["includeEpisodeImages"] = True
+        return self._get("calendar", **params)
+
+    def get_episode(self, seriesId=None, seasonNumber=None):
+        """ GET /episode """
+        params = {}
+        if seriesId is not None:
+            params["seriesId"] = seriesId
+        if seasonNumber is not None:
+            params["seasonNumber"] = seasonNumber
+        return self._get("episode", **params)
+
+    def put_episode_monitor(self, episode_ids, monitored):
+        """ PUT /episode/monitor """
+        return self._put("episode/monitor", json={"episodeIds": episode_ids, "monitored": monitored})
+
     def post_seasonPass(self, json):
         """ POST /seasonPass """
         return self._post("seasonPass", json=json)
@@ -83,6 +114,33 @@ class SonarrRawAPI(BaseRawAPI):
     def get_importlistexclusion(self):
         """ GET /importlistexclusion """
         return self._get("importlistexclusion")
+
+    def get_importlistexclusion_paged(self, page=1, pageSize=250, sortKey=None, sortDirection=None):
+        """ GET /importlistexclusion/paged """
+        params = {"page": page, "pageSize": pageSize}
+        if sortKey is not None:
+            params["sortKey"] = sortKey
+        if sortDirection is not None:
+            params["sortDirection"] = sortDirection
+        return self._get("importlistexclusion/paged", **params)
+
+    def get_queue(self, page=1, pageSize=250, **params):
+        """ GET /queue """
+        return self._get("queue", page=page, pageSize=pageSize, **params)
+
+    def delete_queue_id(self, queue_id, removeFromClient=True, blocklist=False,
+                        skipRedownload=False, changeCategory=False):
+        """ DELETE /queue/{id} """
+        return self._delete(f"queue/{queue_id}", removeFromClient=removeFromClient,
+                            blocklist=blocklist, skipRedownload=skipRedownload,
+                            changeCategory=changeCategory)
+
+    def delete_queue_bulk(self, queue_ids, removeFromClient=True, blocklist=False,
+                          skipRedownload=False, changeCategory=False):
+        """ DELETE /queue/bulk """
+        return self._delete("queue/bulk", json={"ids": queue_ids}, removeFromClient=removeFromClient,
+                            blocklist=blocklist, skipRedownload=skipRedownload,
+                            changeCategory=changeCategory)
 
     def post_importlistexclusion(self, json):
         """ POST /importlistexclusion """

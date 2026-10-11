@@ -99,6 +99,7 @@ class Tag(ReloadObj):
         Attributes:
             id (int): ID of the Tag.
             label (str): Label of the Tag.
+            connections (int): Number of Connect/notification entries using the tag.
             detail (bool): If the Tag was loaded with details.
             delayProfileIds (List[int]): Delay Profile IDs. (Only when loaded with details)
             notificationIds (List[int]): Notification IDs. (Only when loaded with details)
@@ -136,6 +137,16 @@ class Tag(ReloadObj):
 
     def _full_load(self):
         return self._raw.get_tag_id(self.id, detail=self.detail)
+
+    @property
+    def connections(self) -> int:
+        """Return the number of Connect/notification entries using this tag.
+
+        Tag detail is loaded on demand when the tag was retrieved without it.
+        """
+        if not self.detail:
+            self._load(self._raw.get_tag_id(self.id, detail=True))
+        return len(self.notificationIds)
 
     def edit(self, label: str) -> None:
         """ Edit the :class:`~arrapi.objs.reload.Tag`.
@@ -237,6 +248,7 @@ class Movie(ReloadObj):
             rating_value (float): Rating of the Movie.
             originalTitle (str): Original Title of the Movie. (Radarr v3 Only)
             digitalRelease (datetime): Date the Movie was Released Digitally. (Radarr v3 Only)
+            root_folder (str): Root Folder Path for the Movie. (Radarr v3 Only)
             qualityProfileId (int): Quality Profile ID of the Movie. (Radarr v3 Only)
             qualityProfile (:class:`~arrapi.objs.reload.QualityProfile`): Quality Profile of the Movie. (Radarr v3 Only)
             collection_name (str): Collection Name of the Movie. (Radarr v3 Only)
@@ -292,6 +304,7 @@ class Movie(ReloadObj):
         if self._raw.new_codebase:
             self.originalTitle = self._parse(attrs="originalTitle")
             self.digitalRelease = self._parse(attrs="digitalRelease", value_type="date")
+            self.root_folder = self._parse(attrs="rootFolderPath")
             self.qualityProfileId = self._parse(attrs="qualityProfileId", value_type="int")
             self.qualityProfile = self._parse(attrs="qualityProfileId", value_type="intQualityProfile")
             self.collection_name = self._parse(attrs=["collection", "name"])

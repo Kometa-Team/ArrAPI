@@ -1,6 +1,11 @@
 import os, unittest
+from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 from arrapi import SonarrAPI, NotFound, Exists
+from arrapi.objs.reload import Tag
+from arrapi.objs.simple import Episode, Queue, SonarrExclusion
+from arrapi.raws.sonarr import SonarrRawAPI
 """
 import logging
 
@@ -8,6 +13,10 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
 """
+@unittest.skipUnless(
+    os.environ.get("SONARR_URL") and os.environ.get("SONARR_APIKEY"),
+    "Set SONARR_URL and SONARR_APIKEY to run live Sonarr tests"
+)
 class SonarrTests(unittest.TestCase):
     sonarr = None
     root = "/config"
@@ -90,6 +99,122 @@ class SonarrTests(unittest.TestCase):
         tag.edit("newtag")
         tag = next((t for t in self.sonarr.all_tags() if t.label == "newtag"), None)
         self.assertIsNotNone(tag)
+
+
+def _fake_arr(raw):
+    return SimpleNamespace(_raw=raw)
+
+
+class SonarrFeatureTests(unittest.TestCase):
+    def test_exclusions_use_paged_or_legacy_endpoint(self):
+        paged_raw = MagicMock(new_codebase=True)
+        paged_raw.get_importlistexclusion_paged.side_effect = [
+            {"records": [{"tvdbId": 100, "title": "Breaking Bad"}], "totalRecords": 2},
+            {"records": [{"tvdbId": 200, "title": "The Wire"}], "totalRecords": 2},
+        ]
+        legacy_raw = MagicMock(new_codebase=False)
+        legacy_raw.get_importlistexclusion.return_value = [{"tvdbId": 42, "title": "HHGTTG"}]
+
+        self.assertEqual([ex.tvdbId for ex in SonarrExclusion.get_all(_fake_arr(paged_raw))], [100, 200])
+        self.assertEqual([ex.tvdbId for ex in SonarrExclusion.get_all(_fake_arr(legacy_raw))], [42])
+        paged_raw.get_importlistexclusion.assert_not_called()
+        legacy_raw.get_importlistexclusion_paged.assert_not_called()
+
+    def test_queue_api_removes_queue_objects_and_ids(self):
+        raw = MagicMock()
+        api = SimpleNamespace(_raw=raw)
+        queue = Queue(_fake_arr(raw), {"id": 7, "title": "Example"})
+
+        SonarrAPI.remove_queue(api, [queue, 8], blocklist=True)
+
+        raw.delete_queue_bulk.assert_called_once_with(
+            [7, 8], removeFromClient=True, blocklist=True, skipRedownload=False, changeCategory=False
+        )
+
+    def test_episode_monitor_updates_the_object(self):
+        raw = MagicMock()
+        episode = Episode(_fake_arr(raw), {"id": 4, "title": "Pilot", "monitored": False})
+
+        episode.monitor()
+
+        self.assertTrue(episode.monitored)
+        raw.put_episode_monitor.assert_called_once_with([4], True)
+
+    def test_calendar_data_builds_episode_objects_with_related_data(self):
+        raw = MagicMock(new_codebase=True)
+        raw.get_calendar.return_value = [{
+            "id": 5, "title": "Calendar episode", "series": {"id": 4, "title": "Example"},
+            "episodeFile": {"id": 9}, "images": [{"coverType": "screenshot", "url": "/image"}]
+        }]
+        api = SimpleNamespace(_raw=raw)
+
+        calendar = SonarrAPI.calendar(
+            api, start="2026-01-01", end="2026-01-31", include_series=True,
+            include_episode_file=True, include_episode_images=True
+        )
+
+        self.assertEqual(calendar[0].title, "Calendar episode")
+        self.assertEqual(calendar[0].series.id, 4)
+        self.assertEqual(calendar[0].episodeFile, {"id": 9})
+        self.assertEqual(calendar[0].images[0].url, "/image")
+        raw.get_calendar.assert_called_once_with(
+            start="2026-01-01", end="2026-01-31", unmonitored=False, tags=None,
+            includeSeries=True, includeEpisodeFile=True, includeEpisodeImages=True
+        )
+
+    def test_calendar_passes_tag_and_enrichment_options(self):
+        raw = MagicMock()
+        api = SimpleNamespace(_raw=raw, _validate_tags=MagicMock(return_value=[2]))
+        raw.get_calendar.return_value = []
+
+        SonarrAPI.calendar(api, tags=2, include_series=True, include_episode_file=True,
+                           include_episode_images=True, unmonitored=True)
+
+        raw.get_calendar.assert_called_once_with(
+            start=None, end=None, unmonitored=True, tags="2", includeSeries=True,
+            includeEpisodeFile=True, includeEpisodeImages=True
+        )
+
+    def test_episode_api_methods(self):
+        raw = MagicMock()
+        raw.get_episode.return_value = [{"id": 4, "title": "Pilot"}]
+        api = SimpleNamespace(_raw=raw)
+
+        episodes = SonarrAPI.episodes(api, 12, season_number=1)
+        SonarrAPI.monitor_episodes(api, episodes, monitored=False)
+
+        raw.get_episode.assert_called_once_with(seriesId=12, seasonNumber=1)
+        raw.put_episode_monitor.assert_called_once_with([4], False)
+
+    def test_raw_feature_endpoints_make_direct_requests(self):
+        raw = object.__new__(SonarrRawAPI)
+        raw._get = MagicMock()
+        raw._put = MagicMock()
+
+        raw.get_calendar("a", "b", tags="1", includeSeries=True, includeEpisodeFile=True,
+                         includeEpisodeImages=True)
+        raw.get_episode(seriesId=12, seasonNumber=1)
+        raw.get_importlistexclusion_paged(page=2, pageSize=5)
+        raw.put_episode_monitor([1, 2], False)
+
+        raw._get.assert_any_call(
+            "calendar", unmonitored=False, start="a", end="b", tags="1", includeSeries=True,
+            includeEpisodeFile=True, includeEpisodeImages=True
+        )
+        raw._get.assert_any_call("episode", seriesId=12, seasonNumber=1)
+        raw._get.assert_any_call("importlistexclusion/paged", page=2, pageSize=5)
+        raw._put.assert_called_once_with("episode/monitor", json={"episodeIds": [1, 2], "monitored": False})
+
+    def test_tag_connections_loads_tag_details(self):
+        raw = MagicMock()
+        raw.get_tag_id.return_value = {
+            "id": 3, "label": "connected", "delayProfileIds": [],
+            "notificationIds": [10, 11], "restrictionIds": [], "importListIds": []
+        }
+        tag = Tag(_fake_arr(raw), {"id": 3, "label": "connected"})
+
+        self.assertEqual(tag.connections, 2)
+        raw.get_tag_id.assert_called_once_with(3, detail=True)
 
 
 

@@ -3,7 +3,7 @@ from typing import Optional, Union, List, Tuple
 from arrapi import LanguageProfile, RootFolder, QualityProfile, Series, Tag, NotFound, Invalid, Exists
 from .base import BaseAPI
 from ..exceptions import Excluded
-from ..objs.simple import SonarrExclusion
+from ..objs.simple import Episode, Queue, SonarrExclusion
 from ..raws.sonarr import SonarrRawAPI
 
 
@@ -108,7 +108,58 @@ class SonarrAPI(BaseAPI):
 
     def respect_list_exclusions_when_adding(self):
         """ Stores all List Exclusions so whenever :func:`~arrapi.objs.reload.Series.add` or :func:`~arrapi.apis.sonarr.SonarrAPI.add_multiple_series` is called the additions will be checked against the Exclusion List  """
-        self.exclusions = [SonarrExclusion(self, ex).tvdbId for ex in self._raw.get_importlistexclusion()]
+        self.exclusions = [ex.tvdbId for ex in SonarrExclusion.get_all(self)]
+
+    def all_queue(self):
+        """Get every download-queue item in Sonarr."""
+        return Queue.get_all(self)
+
+    def calendar(self, start=None, end=None, unmonitored=False, tags=None, include_series=False,
+                 include_episode_file=False, include_episode_images=False):
+        """Get episodes on Sonarr's calendar.
+
+            Parameters:
+                start (Optional[str]): Inclusive start date or datetime accepted by Sonarr.
+                end (Optional[str]): Inclusive end date or datetime accepted by Sonarr.
+                unmonitored (bool): Include unmonitored episodes.
+                tags (Optional[Union[int, Tag, List[Union[int, Tag]]]]): Limit results to tags.
+                include_series (bool): Include each episode's parent :class:`~arrapi.objs.reload.Series`.
+                include_episode_file (bool): Include each episode's file details.
+                include_episode_images (bool): Include each episode's artwork.
+
+            Returns:
+                List[Episode]: Episodes scheduled in the requested calendar range.
+        """
+        if tags is not None:
+            tags = self._validate_tags(tags, create=False)
+            tags = ",".join(str(tag) for tag in tags)
+        return [Episode(self, data) for data in self._raw.get_calendar(
+            start=start, end=end, unmonitored=unmonitored, tags=tags,
+            includeSeries=include_series, includeEpisodeFile=include_episode_file,
+            includeEpisodeImages=include_episode_images
+        )]
+
+    def episodes(self, series_id, season_number=None):
+        """Get episodes for a series, optionally limited to a season."""
+        return [Episode(self, data) for data in self._raw.get_episode(seriesId=series_id, seasonNumber=season_number)]
+
+    def monitor_episodes(self, episodes, monitored=True):
+        """Set monitoring for one or more episode IDs or Episode objects."""
+        if not isinstance(episodes, list):
+            episodes = [episodes]
+        episode_ids = [episode.id if isinstance(episode, Episode) else episode for episode in episodes]
+        return self._raw.put_episode_monitor(episode_ids, monitored)
+
+    def remove_queue(self, queue_ids, remove_from_client=True, blocklist=False,
+                     skip_redownload=False, change_category=False):
+        """Remove one or more items from Sonarr's download queue."""
+        if not isinstance(queue_ids, list):
+            queue_ids = [queue_ids]
+        queue_ids = [queue.id if isinstance(queue, Queue) else queue for queue in queue_ids]
+        return self._raw.delete_queue_bulk(
+            queue_ids, removeFromClient=remove_from_client, blocklist=blocklist,
+            skipRedownload=skip_redownload, changeCategory=change_category
+        )
 
     def get_series(self, series_id: Optional[int] = None, tvdb_id: Optional[int] = None) -> Series:
         """ Gets a :class:`~arrapi.objs.reload.Series` by one of the IDs.

@@ -33,6 +33,20 @@ SonarrExclusion
     :members:
 
 
+Queue
+--------------------
+
+.. autoclass:: arrapi.objs.simple.Queue
+    :members:
+
+
+Episode
+--------------------
+
+.. autoclass:: arrapi.objs.simple.Episode
+    :members:
+
+
 Root Folder
 --------------------
 

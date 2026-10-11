@@ -3,7 +3,7 @@ from typing import Optional, Union, List, Tuple
 from arrapi import RootFolder, QualityProfile, Movie, Tag, NotFound, Invalid, Exists
 from .base import BaseAPI
 from ..exceptions import Excluded
-from ..objs.simple import RadarrExclusion
+from ..objs.simple import Queue, RadarrExclusion
 from ..raws.radarr import RadarrRawAPI
 
 
@@ -98,7 +98,41 @@ class RadarrAPI(BaseAPI):
 
     def respect_list_exclusions_when_adding(self):
         """ Stores all List Exclusions so whenever :func:`~arrapi.objs.reload.Movie.add` or :func:`~arrapi.apis.sonarr.RadarrAPI.add_multiple_movies` is called the additions will be checked against the Exclusion List  """
-        self.exclusions = [RadarrExclusion(self, ex).tmdbId for ex in self._raw.get_exclusions()]
+        self.exclusions = [ex.tmdbId for ex in RadarrExclusion.get_all(self)]
+
+    def all_queue(self):
+        """Get every download-queue item in Radarr."""
+        return Queue.get_all(self)
+
+    def calendar(self, start=None, end=None, unmonitored=False, tags=None):
+        """Get movies on Radarr's calendar.
+
+            Parameters:
+                start (Optional[str]): Inclusive start date or datetime accepted by Radarr.
+                end (Optional[str]): Inclusive end date or datetime accepted by Radarr.
+                unmonitored (bool): Include unmonitored movies.
+                tags (Optional[Union[int, Tag, List[Union[int, Tag]]]]): Limit results to tags.
+
+            Returns:
+                List[Movie]: Movies scheduled in the requested calendar range.
+        """
+        if tags is not None:
+            tags = self._validate_tags(tags, create=False)
+            tags = ",".join(str(tag) for tag in tags)
+        return [Movie(self, data) for data in self._raw.get_calendar(
+            start=start, end=end, unmonitored=unmonitored, tags=tags
+        )]
+
+    def remove_queue(self, queue_ids, remove_from_client=True, blocklist=False,
+                     skip_redownload=False, change_category=False):
+        """Remove one or more items from Radarr's download queue."""
+        if not isinstance(queue_ids, list):
+            queue_ids = [queue_ids]
+        queue_ids = [queue.id if isinstance(queue, Queue) else queue for queue in queue_ids]
+        return self._raw.delete_queue_bulk(
+            queue_ids, removeFromClient=remove_from_client, blocklist=blocklist,
+            skipRedownload=skip_redownload, changeCategory=change_category
+        )
 
     def get_movie(self, movie_id: Optional[int] = None, tmdb_id: Optional[int] = None, imdb_id: Optional[str] = None) -> Movie:
         """ Gets a :class:`~arrapi.objs.reload.Movie` by one of the IDs.

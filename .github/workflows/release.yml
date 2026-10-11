@@ -1,21 +1,17 @@
 name: PyPI Release
 
 on:
-  create:
+  push:
     tags:
       - v*
+
+permissions:
+  contents: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-
-      - name: Create Release for new Tag
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
-          title: ${{ secrets.REPO_NAME }} ${{ github.event.ref }}
-          repo_token: ${{ secrets.PAT }}
-          prerelease: false
 
       - name: Check Out Repo
         uses: actions/checkout@v7
@@ -23,12 +19,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.x'
+          python-version: '3.13'
+          cache: pip
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install wheel twine setuptools
+          pip install build twine
           pip install --no-cache-dir --upgrade --requirement requirements.txt
 
       - name: Build and publish
@@ -36,8 +33,14 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
-          python setup.py sdist bdist_wheel
+          python -m build
+          twine check dist/*
           twine upload dist/*
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          generate_release_notes: true
 
       - name: Discord Success Notification
         uses: Kometa-Team/discord-notifications@master

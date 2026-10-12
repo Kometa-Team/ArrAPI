@@ -14,10 +14,10 @@ jobs:
     steps:
 
       - name: Check Out Repo
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.13'
           cache: pip
@@ -38,7 +38,7 @@ jobs:
           twine upload dist/*
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v3.0.3
         with:
           generate_release_notes: true
 

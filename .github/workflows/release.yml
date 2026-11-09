@@ -38,7 +38,7 @@ jobs:
           twine upload dist/*
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v3.0.3
+        uses: softprops/action-gh-release@v3.0.4
         with:
           generate_release_notes: true
 
